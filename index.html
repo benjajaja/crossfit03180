@@ -136,6 +136,7 @@
 
 <div class="container-fluid" id="horario">     
 		<h1>Horario de eventos</h1>	
+		<button class="btn" id="loginButton">Acceder...</button>
      	<div id='calendar'></div>
 </div>
        	
@@ -213,64 +214,101 @@ $(function () {
         $("html, body").animate({ scrollTop: top }, 700);
         return false;
     });     
-});
 
-var calendar = $('#calendar').fullCalendar({
+	var calendar = $('#calendar').fullCalendar({
 
-	defaultView: 'agendaWeek',
-	firstDay: 1,
-	dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Sábado'],
-	dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
-	monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-	monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-	columnFormat: {
-		month: 'dddd',
-		week: 'ddd d',
-		day: 'dddd d/M'
-	},
-	titleFormat: {
-		month: 'dddd',
-		week: 'MMM d[ yyyy]{ \'&#8212;\'[ MMMM] d yyyy}',
-		day: 'dddd, MMM d, yyyy'
-	},
+		defaultView: 'agendaWeek',
+		firstDay: 1,
+		dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Sábado'],
+		dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+		monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+		monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+		columnFormat: {
+			month: 'dddd',
+			week: 'ddd d',
+			day: 'dddd d/M'
+		},
+		titleFormat: {
+			month: 'dddd',
+			week: 'MMM d[ yyyy]{ \'&#8212;\'[ MMMM] d yyyy}',
+			day: 'dddd, MMM d, yyyy'
+		},
 
-	header: {
-	    left:   'title',
-	    center: '',
-	    right:  'prev,next'
-	},
+		header: {
+		    left:   'title',
+		    center: '',
+		    right:  'prev,next'
+		},
 
-	allDaySlot: false,
-	minTime: 8,
-	maxTime: 23,
-	axisFormat: 'H:mm',
-	slotMinutes: 60,
+		allDaySlot: false,
+		minTime: 8,
+		maxTime: 23,
+		axisFormat: 'H:mm',
+		slotMinutes: 60,
 
-	timeFormat: {
-		agenda: '',
-	},
+		timeFormat: {
+			agenda: '',
+		},
 
-	aspectRatio: 0.1, // force full height
+		aspectRatio: 0.1, // force full height
 
-	// US Holidays
-	events: 'https://www.google.com/calendar/feeds/g00c1jhsvs6am0p7higlql09uo%40group.calendar.google.com/public/basic',
-	
-	eventClick: function(event) {
-		// opens events in a popup window
-		//window.open(event.url, 'gcalevent', 'width=700,height=600');
+		// US Holidays
+		events: 'https://www.google.com/calendar/feeds/g00c1jhsvs6am0p7higlql09uo%40group.calendar.google.com/public/basic',
 		
-		return false;
-	},
-	
-	loading: function(bool) {
-		if (bool) {
-			$('#loading').show();
-		}else{
-			$('#loading').hide();
+		eventClick: function(event) {
+			// opens events in a popup window
+			//window.open(event.url, 'gcalevent', 'width=700,height=600');
+			
+			return false;
+		},
+		
+		loading: function(bool) {
+			if (bool) {
+				$('#loading').show();
+			}else{
+				$('#loading').hide();
+			}
 		}
-	}
-	
+		
+	});
+
+	$('#loginButton').click(function(e) {
+		$('#loginModal').modal();
+	});
+
+	var login = function(e) {
+		e.preventDefault();
+		$.ajax({
+			url: '/api/auth',
+			method: 'POST',
+			data: $('#loginModal form').serializeArray().reduce(function(data, item) {
+				data[item.name] = item.value;
+				return data;
+			}, {})
+		}).done(function(response) {
+			alert(response);
+		});
+	};
+	$('#loginModal form').submit(login);
+	$('#loginModal .btn-primary').click(login);
 });
 </script>
+
+<div id="loginModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Acceso de usuario</h3>
+  </div>
+  <div class="modal-body">
+    <form>
+    	<input type="text" name="user">
+    	<input type="password" name="password">
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary">Acceder</button>
+  </div>
+</div>
+
 </body>
 </html>

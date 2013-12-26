@@ -1,8 +1,8 @@
 <?php
 
 class Auth {
-	public function get($req, $res) {
-		$res->add('hola!');
+	public function post($req, $res) {
+		$res->add('hola: ' . $req->data['user']);
 		$res->send(201, 'text');
 	}
 }

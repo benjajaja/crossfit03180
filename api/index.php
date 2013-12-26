@@ -19,7 +19,7 @@ $addRoute = function($path, $class, $method) use ($router) {
 	$router->addRoute($route);
 };
 
-$addRoute('/auth', 'Auth', 'get');
+$addRoute('/auth', 'Auth', 'post');
 
 
 try {
