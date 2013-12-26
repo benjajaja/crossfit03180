@@ -3,11 +3,11 @@
 	<meta charset="utf-8">
 	<title>Crossfit03180</title>
 	<link rel="stylesheet" href="css/style_calendario.css"/>
-	<link rel="stylesheet" href="css/bootstrap.css"/>
-	<script src="js/jquery.min.js"></script>
-	<script src="js/jquery-ui.custom.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.min_calendar.css"/>
+	<script src="js/jquery-1.9.1.js"></script>
+	<script src="js/jquery-ui.js"></script>
 	<script src="js/moment.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap.min_calendar.js"></script>
 	
 	<script type="text/javascript">
 		$(function(){
