@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>CrossFit 03180</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+  	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+  	<script src="js/jquery.min.js"></script>
+  	<script src="js/jquery-ui.custom.min.js"></script>
+  	<script src="lib/fullcalendar/fullcalendar.min.js"></script>
+  	<script src="lib/fullcalendar/gcal.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Raleway:200' rel='stylesheet' type='text/css'>
+
+	<script type="text/javascript" src="js/bootstrap.min.js"></script> 
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="lib/fullcalendar/fullcalendar.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+
+  <!-- IE Fix for HTML5 Tags -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+
+  <!-- Navbar -->
+	<div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+    		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+          	</a>
+          	<a class="brand scroller" data-section="html" href="index.html">CROSSFIT 03180</a>
+		  	<div class="nav-collapse collapse">
+                <ul class="nav pull-right">
+                    <li><a href="#" class="scroller" data-section="#about">¿Qué es?</a></li>
+                    <li><a href="#" class="scroller" data-section="#oficial">Oficial</a></li>
+                    <li><a href="#" class="scroller" data-section="#contact">Contacto</a></li>
+                </ul>
+	        </div>
+        </div>
+      </div>
+    </div>
+    <!-- end Navbar -->
+    
+    
+    <!-- #intro -->
+	<div class="main-container">
+		<div class="container-fluid" id="intro">
+		<img id="logo" src="img/LogoPou.png"/>
+		<div class="container">	
+			<div class="row span8 center">
+				<h2>Primer Box oficial de CrossFit de Torrevieja</h2>
+				<p>
+					<a href="http://twitter.com/@crossfit03180" target="_blank"><i class="fa fa-twitter fa-5x"></i></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="http://instagram.com/crossfit03180" target="_blank"><i class="fa fa-instagram fa-5x"></i></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="http://facebook.com/crossfit03180" target="_blank"><i class="fa fa-facebook fa-5x"></i></a>
+				</p>
+				<!--<a href="#" class="btn btn-xlarge btn-purple">Sign Up</a>-->
+			</div>	
+		</div>
+	</div>
+    <!-- ends Intro -->
+    
+    
+     <!-- #about -->
+<div class="container-fluid" id="about">
+		<div class="container light">
+			<h1>¿Qué es?</h1>
+		<ul class="thumbnails">
+		  <li>
+		    <div class="thumbnail">
+		      <h3>El CrossFit es movimientos funcionales,realizados a alta intensidad,en constante variacion.</h3>
+		      <p>Crossfit  es un programa de fuerza y acondicionamiento físico Total, que se basa en el incremento de las diez capacidades físicas más reconocidas por los especialistas en el entrenamiento deportivo:</p>
+		      <div class="container">
+			      <ol class="span4 offset4">
+			      	<li>Resistencia cardio-respiratoria</li>
+					<li>Resistencia muscular</li>
+					<li>Fuerza</li>
+					<li>Flexibilidad</li>
+					<li>Potencia</li>
+					<li>Velocidad</li>
+					<li>Coordinación</li>
+					<li>Agilidad</li>
+					<li>Equilibrio</li>
+					<li>Precisión</li>
+				  </ol>
+			  </div>
+			  <p>El objetivo de CrossFit es desarrollar al máximo el rendimiento en todas y cada una de estas áreas físicas, y no realizar un programa especifico de entrenamiento. Por eso solemos decir que nuestra especialidad es no especializarnos.</p>
+		    </div>
+		  </li>
+		</ul>
+	</div>
+</div>
+     <!-- ends About -->
+
+      <!-- #team -->    
+<div class="container-fluid" id="oficial">
+	<div class="container dark">
+		<h1>Crossfit Oficial y Certificado</h1>
+			<ul class="thumbnails">
+			  <li class="span4">
+			    <div class="thumbnail">
+			      <img alt="" src="img/crossfitjournal.png">
+			      <h3><a href="http://journal.crossfit.com/">Crossfit Journal</a></h3>
+			    </div>
+			  </li>
+			
+			  <li class="span4">
+			    <div class="thumbnail">
+			      <img alt="" src="img/reebokone.png">
+			      <h3><a href="http://www.reebok.com/crossfit03180">Reebok One</a></h3>
+			    </div>
+			  </li>
+			  
+			  <li class="span4">
+			    <div class="thumbnail">
+			      <img alt="" src="img/crossfit.jpeg">
+			      <h3><a href="http://crossfit.com/">crossfit.com</a></h3>
+			    </div>
+			  </li>
+			 </ul>
+		</div>
+</div>
+      <!-- End Team -->  
+
+<div class="container-fluid" id="oficial">     
+
+     <div id='calendar'></div>
+
+</div>
+       	
+	
+      <!-- #contact -->   	
+<div class="container-fluid" id="contact">
+	<div class="container dark">
+		<h1>¿Preguntas?</h1>	
+	
+		<!--<div class="span5">			
+			<form>
+				  <div class="control-group">
+				    <label class="control-label" for="inputName">Name</label>
+				    <div class="controls">
+				      <input type="text" class="span4" id="inputName" placeholder="Name">
+				    </div>
+				  </div>
+				  <div class="control-group">
+				    <label class="control-label" for="inputEmail">Email</label>
+				    <div class="controls">
+				      <input type="text" class="span4" id="inputEmail" placeholder="Email">
+				    </div>
+				  </div>
+				  <div class="control-group">
+				    <label class="control-label" for="inputContact">Message</label>
+				    <div class="controls">
+				     <textarea id="inputContact" class="span4"></textarea>
+				    </div>
+				  </div>
+				  <div class="control-group">
+				    <div class="controls">
+				      <button type="submit" class="btn btn-purple">Contact Us</button>
+				    </div>
+				  </div>
+			</form>
+		</div>-->
+	
+		<div class="span6 offset2">	
+				<h2>Ponte en contacto</h2>
+				
+				<p>Te atenderemos lo antes posible. Puedes enviarnos un email, dejar un mensaje en
+				nuestra página de facebook o twitter, o simplemente acercarte al gimnasio.</p>
+	
+				<address>
+				  <strong>CrossFit 03180</strong><br>
+				  C/ San Pablo nº 4<br>
+				  03181 Torrevieja (Alicante)<br>
+				  <abbr title="Phone">Tel:</abbr> (+34) 695 175 454
+				</address>
+				 
+				<address>
+				  <a href="mailto:info@crossfit03180.com">info@crossfit03180.com</a><br/>
+				  <a href="http://twitter.com/@crossfit03180"><i class="fa fa-twitter"></i>@crossfit03180</a><br/>
+				  <a href="http://facebook.com/crossfit03180"><i class="fa fa-facebook"></i>.com/crossfit03180</a>
+				</address>		
+		</div>		
+	</div>
+</div>   <!-- End Contact -->  
+	</div>
+<script>
+$(function () {
+    $(window).scroll(function(){
+    // global scroll to top button
+        if ($(this).scrollTop() > 300) {
+            $('.scrolltop').fadeIn();
+        } else {
+            $('.scrolltop').fadeOut();
+        }        
+    });
+    
+    // scroll nav
+    $('.scroller').click(function(){
+    	var section = $($(this).data("section"));
+    	var top = section.offset().top-82;
+        $("html, body").animate({ scrollTop: top }, 700);
+        return false;
+    });     
+});
+
+$('#calendar').fullCalendar({
+
+	defaultView: 'basicWeek',
+	firstDay: 1,
+	dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Sábado'],
+	dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+
+	// US Holidays
+	events: 'https://www.google.com/calendar/feeds/g00c1jhsvs6am0p7higlql09uo%40group.calendar.google.com/public/basic',
+	
+	eventClick: function(event) {
+		// opens events in a popup window
+		window.open(event.url, 'gcalevent', 'width=700,height=600');
+		return false;
+	},
+	
+	loading: function(bool) {
+		if (bool) {
+			$('#loading').show();
+		}else{
+			$('#loading').hide();
+		}
+	}
+	
+});
+</script>
+</body>
+</html>
