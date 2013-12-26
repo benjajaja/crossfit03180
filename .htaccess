@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteRule "(^|/)\." - [F]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !=/favicon.ico
+RewriteRule ^ /api/index.php [NC,NS,L]
+
+
+#RewriteRule ^([^?]*)$ /api/?path=$1 [NC,L,QSA]
+
