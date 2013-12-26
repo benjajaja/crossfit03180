@@ -1,0 +1,95 @@
+body{
+	cursor: pointer;
+	background-color: #2C393B !important;
+	height: 100%;
+}
+.cuerpo_principal{
+	float: left;
+}
+div#cont-eliminar{
+	position: fixed;
+	left: 0em;
+	top: 0em;
+	padding: 0.5em;
+	width: 14em;
+	background-color: #000;
+	color: #FFF;
+	visibility: hidden;
+	z-index: 1;
+	border: 0.5px solid #FFF;
+}
+div#cont-usuarios{
+	position: absolute;
+	left: 0.5em;
+	top: 1em;
+	padding: 0.5em;
+	width: 12em;
+}
+div#cont-eventos{
+	position: absolute;
+	left: 0.5em;
+	top: 6em;
+	padding: 0.5em;
+	width: 12em;
+}
+div.evento{
+	max-height: 60px;
+	max-width: 137px;
+	min-height: 60px;
+	min-width: 137px;
+	word-wrap: break-word;
+	z-index: 1;
+	padding: 0.5em;
+	border: 0.5px solid #000;
+	background: #f4f4f4; /* Old browsers */
+	background: -moz-linear-gradient(top,  #f4f4f4 0%, #eaeae7 99%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(99%,#eaeae7)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #f4f4f4 0%,#eaeae7 99%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #f4f4f4 0%,#eaeae7 99%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #f4f4f4 0%,#eaeae7 99%); /* IE10+ */
+	background: linear-gradient(to bottom,  #f4f4f4 0%,#eaeae7 99%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#eaeae7',GradientType=0 ); /* IE6-9 */
+}
+table{
+	position: absolute;
+	left: 13em;
+	top: 1em;
+	z-index: 0;
+	background-color: #FFF;
+	float: left;
+}
+td.horario{
+	max-width: 70px;
+	min-width: 70px;
+	font-weight: bold;
+}
+td.dias{
+	max-width:140px;
+	min-width:140px;
+	background-color:#000;
+	color: #FFFFFF;
+	font-weight: bold;
+}
+td.hora{
+	text-align: right;
+	height:40px;
+	min-height:40px;
+	max-height:40px;
+	max-width:100px;
+	color: #fff;
+}
+td.clase{
+	height:63px;
+	min-height:63px;
+	max-height:63px;
+	max-width:120px;
+}
+.ui-draggable-dragging{
+	cursor: pointer;
+}
+div#cont-usuarios,div#cont-eventos,table,td{
+	border: 1px solid #FFF;
+}
+label.error{
+	color: red;
+}
