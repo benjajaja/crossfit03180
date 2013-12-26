@@ -42,6 +42,7 @@
                 <ul class="nav pull-right">
                     <li><a href="#" class="scroller" data-section="#about">¿Qué es?</a></li>
                     <li><a href="#" class="scroller" data-section="#oficial">Oficial</a></li>
+                    <li><a href="#" class="scroller" data-section="#horario">Horario</a></li>
                     <li><a href="#" class="scroller" data-section="#contact">Contacto</a></li>
                 </ul>
 	        </div>
@@ -133,10 +134,9 @@
 </div>
       <!-- End Team -->  
 
-<div class="container-fluid" id="oficial">     
-
-     <div id='calendar'></div>
-
+<div class="container-fluid" id="horario">     
+		<h1>Horario de eventos</h1>	
+     	<div id='calendar'></div>
 </div>
        	
 	
@@ -215,19 +215,50 @@ $(function () {
     });     
 });
 
-$('#calendar').fullCalendar({
+var calendar = $('#calendar').fullCalendar({
 
-	defaultView: 'basicWeek',
+	defaultView: 'agendaWeek',
 	firstDay: 1,
 	dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Sábado'],
 	dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+	monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+	monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+	columnFormat: {
+		month: 'dddd',
+		week: 'ddd d',
+		day: 'dddd d/M'
+	},
+	titleFormat: {
+		month: 'dddd',
+		week: 'MMM d[ yyyy]{ \'&#8212;\'[ MMMM] d yyyy}',
+		day: 'dddd, MMM d, yyyy'
+	},
+
+	header: {
+	    left:   'title',
+	    center: '',
+	    right:  'prev,next'
+	},
+
+	allDaySlot: false,
+	minTime: 8,
+	maxTime: 23,
+	axisFormat: 'H:mm',
+	slotMinutes: 60,
+
+	timeFormat: {
+		agenda: '',
+	},
+
+	aspectRatio: 0.1, // force full height
 
 	// US Holidays
 	events: 'https://www.google.com/calendar/feeds/g00c1jhsvs6am0p7higlql09uo%40group.calendar.google.com/public/basic',
 	
 	eventClick: function(event) {
 		// opens events in a popup window
-		window.open(event.url, 'gcalevent', 'width=700,height=600');
+		//window.open(event.url, 'gcalevent', 'width=700,height=600');
+		
 		return false;
 	},
 	

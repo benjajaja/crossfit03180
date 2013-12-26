@@ -88,7 +88,7 @@ ol {
 	background:#000;
 	background:rgba(0,0,0,0.8);
 }
-#contact {
+#contact, #oficial {
 	background:#202020;
 }
 
@@ -360,4 +360,23 @@ ol {
 #logo {
 	margin-top: 50px;
 	max-width: 100%;
+}
+
+
+
+#horario h1 {
+	color: #fff;
+}
+
+#calendar {
+	margin-bottom: 20px;
+}
+
+.fc-content {
+	background: #202020;
+	color: #fff;
+}
+
+.fc-state-highlight {
+	background: #303030;
 }
