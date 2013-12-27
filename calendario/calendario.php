@@ -2,12 +2,12 @@
 <head>
 	<meta charset="utf-8">
 	<title>Crossfit03180</title>
-	<link rel="stylesheet" href="../css/style_calendario.css"/>
-	<link rel="stylesheet" href="../css/bootstrap.min_calendar.css"/>
-	<script src="../js/jquery-1.9.1.js"></script>
-	<script src="../js/jquery-ui.js"></script>
-	<script src="../js/moment.min.js"></script>
-	<script src="../js/bootstrap.min_calendar.js"></script>
+	<link rel="stylesheet" href="css/style_calendario.css"/>
+	<link rel="stylesheet" href="css/bootstrap.min_calendar.css"/>
+	<script src="js/jquery-1.9.1.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="js/moment.min.js"></script>
+	<script src="js/bootstrap.min_calendar.js"></script>
 	
 	<script type="text/javascript">
 		$(function(){
@@ -131,7 +131,8 @@
 							});
 					if(j===diaNum){
 						$(td).css({
-							'background-color': 'rgba(12, 48, 73, 50)'
+							'background-color': 'rgba(12, 48, 73, 50)',
+							'z-index': '-1'
 						});
 					}
 					tr.append(td);
@@ -185,22 +186,12 @@
 			});
 
 			function creaEvento(i, eventosBD){
-				return $("<div>")
+				var div = $("<div>")
 					.addClass('evento')
-					.attr('id','evento')
-					.text(eventosBD[i][1])
 					.draggable({
 						drag: function(event, ui) {
 							$('body').css({
 								'cursor': 'pointer'
-							});
-							$('div#cont-eliminar').css({
-								visibility: 'visible'
-							});
-						},
-						stop: function(event, ui) {
-							$('div#cont-eliminar').css({
-								visibility: 'hidden'
 							});
 						},
 						opacity: 0.75,
@@ -208,13 +199,30 @@
 					})
 					.sortable()
 					.attr({
+						'id': 'evento',
 						'mi_id': eventosBD[i][3],
 						'id_evento': eventosBD[i][0],
 						'maxUsuarios': eventosBD[i][2]
 					});
+
+				var div_barra_admin = $('<div>').addClass('barra_admin');
+
+				div.append(div_barra_admin);
+
+				var div_texto = $('<div>').addClass('texto')
+					.text(eventosBD[i][1]);
+
+				div.append(div_texto);
+
+				var div_max_usuarios = $('<div>').addClass('max_usuarios')
+					.text("[Rs "+eventosBD[i][2]+"]");
+
+				div.append(div_max_usuarios);
+
+				return div;
 			}
 
-			$("#cont-eliminar")
+			/*$("#cont-eliminar")
 				.droppable({
 					accept: '.evento',
 					drop: 	function(event, ui) {
@@ -243,7 +251,7 @@
 									});
 								}
 							}
-				});
+				});*/
 
 			$("#btn_crea_evento").click(function(){
 				$('.error').hide();
@@ -263,6 +271,7 @@
 				}
 				else{
 					$('#evento_error').hide();
+					evento = evento.substring(0,10);
 				}
 				if(max === ""){
 					$("label#max_error").show();
@@ -277,6 +286,7 @@
 					}
 					else{
 						$("label#max_numeric_error").hide();
+						max = max.substring(0,3);
 					}
 				}
 				var dato="tipo=insert_evento&evento="+evento+"&max_usuarios="+max;
@@ -382,7 +392,7 @@
 			        <form id="form_evento" action="" method="post">
 						<p>
 							<label for="evento">Nombre de evento
-								<input name="evento" type="text" id="evento" size=30>
+								<input name="evento" type="text" id="evento" size=30 maxlength="10">
 							</label><p>
 							<label class="error" for="evento" id="evento_error">Introduce el nombre del evento.</label>
 						</p>
