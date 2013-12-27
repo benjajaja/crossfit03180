@@ -16,7 +16,7 @@
 			$('#tabla, #cont-eventos').css('MozUserSelect', 'none');//mozilla y derivados
 			$('#tabla, #cont-eventos').css('KhtmlUserSelect', 'none');//el safari por ejemplo	
 
-			var array_horas = ['7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
+			var array_horas = ['8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
 			var array_dias = ['Lun','Mar','Mie','Jue','Vie','Sab','Dom'];
 
 			//recoge el dia y el mes actual
@@ -41,7 +41,7 @@
 							if(i===diaNum){
 								numCeldaHoy = i;
 								$(this).css({
-									'background-color': 'rgba(0, 0, 0, 0)'
+									'background-color': 'rgba(12, 48, 73, 50)'
 								});
 								return array_dias[i-1]+" "+moment().date()+"/"+mesNum;
 							}
@@ -129,6 +129,11 @@
 											}
 										}
 							});
+					if(j===diaNum){
+						$(td).css({
+							'background-color': 'rgba(12, 48, 73, 50)'
+						});
+					}
 					tr.append(td);
 				}
 				$('#tabla').append(tr);//inserta la fila creada a la tabla
