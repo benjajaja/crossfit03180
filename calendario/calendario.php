@@ -21,14 +21,20 @@
 
 			//recoge el dia y el mes actual
 			var d=new Date();
-			var diaNum= d.getDay();
-			var mesNum= d.getMonth()+1;
+			var diaNum = d.getDay();
+			var mesNum = d.getMonth()+1;
+			var anyoNum = d.getFullYear();
+			var diasDelMes = moment().daysInMonth();
+			
 			if(diaNum===0)
 				diaNum=7;
 
 			//crea la primera celda con el texto horario
 			var tr = $("<tr align='center'>")
-			var td = $("<td>").addClass('horario');
+			
+			var td = $("<td>")
+						.addClass('horario');
+			
 			tr.append(td);
 
 			//recorre de 1 a 7 (días de la semana) y crea una celda para cada día con el nombre del día, el número de día y mes
@@ -38,21 +44,27 @@
 						.addClass('dias')
 						.attr('id',array_dias[i-1])
 						.text(function(){
-							if(i===diaNum){
+							if(i===diaNum){//si es el dia actual
 								numCeldaHoy = i;
-								$(this).css({
-									'background-color': 'rgba(12, 48, 73, 50)'
-								});
-								return array_dias[i-1]+" "+moment().date()+"/"+mesNum;
+								return array_dias[i-1]+" "+moment().date()+"/"+mesNum+"/"+anyoNum;
 							}
-							else{
+							else{//si no es el dia actual
 								if(i<diaNum){
 									var dif = diaNum-i;
-									return array_dias[i-1]+" "+moment().subtract('day', dif).date()+"/"+mesNum;
+									return array_dias[i-1]+" "+moment().subtract('day', dif).date()+"/"+mesNum+"/"+anyoNum;
 								}
 								else if(i>diaNum){
 									var dif = i-diaNum;
-									return array_dias[i-1]+" "+moment().add('day', dif).date()+"/"+mesNum;
+									if(moment().add('day', dif).date()===1){//si el dia a mostrar es 1, suma 1 al numero del mes o pone a 1 si el numero de mes es 12
+										if(mesNum===12){
+											mesNum=1;
+											anyoNum=anyoNum+1;
+										}
+										else{
+											mesNum = mesNum+1;
+										}
+									}
+									return array_dias[i-1]+" "+moment().add('day', dif).date()+"/"+mesNum+"/"+anyoNum;
 								}
 							}
 						});
@@ -81,83 +93,60 @@
 								drop: 	function(event, ui) {
 											if($(this).children("div").size() === 0){
 												if($(ui.draggable).parent().attr('id') === 'cont-eventos'){
+													
 													var dato = "tipo=insert_evento_calendario&idEvento="+$(ui.draggable).attr('id_evento')+"&x_post="+$(this).attr('x')+"&y_post="+$(this).attr('y');
-													ui.draggable.attr({
-														x: $(this).attr('x'),
-														y: $(this).attr('y')
-													});
+													
 													$.ajax({
 													    type: "POST",
 													    url: "admin/eventos.php",
-													    data: dato
+													    data: dato,
+													    success: 	function(data){
+													    				var id = jQuery.parseJSON(data);
+													    				$(ui.draggable)
+													    					.attr({
+																				'id_evento_calendario': id
+																			});
+													    }
 													});
+													//asigna las nuevas posiciones X e Y
 													$(ui.draggable)
-														.clone()
-														.appendTo('#cont-eventos')
-														.draggable({
-															drag: function(event, ui) {
-																$('body').css({
-																	'cursor': 'pointer'
-																});
-																$('div#cont-eliminar').css({
-																	'visibility': 'visible'
-																});
-															},
-															stop: function(event, ui) {
-																$('div#cont-eliminar').css({
-																	'visibility': 'hidden'
-																});
-															},
-															opacity: 0.75,
-															helper: "clone"
-														})
-														.sortable();
+														.attr({
+															x: $(this).attr('x'),
+															y: $(this).attr('y')
+														});
 												}
 												else{
 													var dato = "tipo=update_evento_calendario&idEvento="+$(ui.draggable).attr('id_evento')+"&x_ant="+$(ui.draggable).attr('x')+"&y_ant="+$(ui.draggable).attr('y')+"&x_post="+$(this).attr('x')+"&y_post="+$(this).attr('y');
-													ui.draggable.attr({
-														x: $(this).attr('x'),
-														y: $(this).attr('y')
-													});
 													$.ajax({
 													    type: "POST",
 													    url: "admin/eventos.php",
 													    data: dato
 													});
 												}
-												$(this).append(ui.draggable);
+												$(ui.draggable)
+													.attr({
+														x: $(this).attr('x'),
+														y: $(this).attr('y')
+													});
+												$(this)
+													.append(ui.draggable);
 											}
 										}
 							});
+					//resalta los horarios del día actual
 					if(j===diaNum){
-						$(td).css({
-							'background-color': 'rgba(12, 48, 73, 50)',
-							'z-index': '-1'
-						});
+						$(td)
+							.css({
+								'background-color': 'rgba(12, 48, 73, 50)',
+								'z-index': '-1'
+							});
 					}
+
 					tr.append(td);
 				}
 				$('#tabla').append(tr);//inserta la fila creada a la tabla
 			}
 
-			//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
-			//eventosBD[i][0] = id,
-			//eventosBD[i][1] = nombre,
-			//eventosBD[i][2] = max_usuarios
-			$.ajax({
-			    type: "POST",
-			    url: "admin/eventos.php",
-			    data: "tipo=select_eventos",
-			    success: function(data){
-			    	if(data !== '[[""]]'){
-			    		var eventosBD = jQuery.parseJSON(data);
-				      	for(var i in eventosBD){
-							var evento = creaEvento(i, eventosBD);
-				      		$("#cont-eventos").append(evento);
-				      	}
-			    	}
-			    }
-			});
 			//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
 			//eventosBD[i][0] = id,
 			//eventosBD[i][1] = nombre,
@@ -171,91 +160,121 @@
 			    url: "admin/eventos.php",
 			    data: "tipo=select_eventos_calendario",
 			    success: function(data){
-			    	if(data !== '[[""]]'){
+			    	if(data !== '0'){
 			    		var eventosBD = jQuery.parseJSON(data);
 				      	for(var i in eventosBD){
-							var objeto = creaEvento(i, eventosBD);
-							$(objeto).attr({
-								'x': eventosBD[i][4],
-								'y': eventosBD[i][5]
-							});
+							var objeto = creaEvento(i, eventosBD, "evento_calendario");
+							$(objeto)
+								.attr({
+									'x': eventosBD[i][4],
+									'y': eventosBD[i][5]
+								});
 				      		$("#clase_"+eventosBD[i][4]+"_"+eventosBD[i][5]).append(objeto);
 				      	}
 			    	}
 			    }
 			});
 
-			function creaEvento(i, eventosBD){
+			function creaEvento(i, eventosBD, tipo){
+
 				var div = $("<div>")
-					.addClass('evento')
-					.draggable({
-						drag: function(event, ui) {
-							$('body').css({
-								'cursor': 'pointer'
-							});
-						},
-						opacity: 0.75,
-						helper: "clone"
-					})
-					.sortable()
+							.addClass('evento');
+				$(div)
 					.attr({
 						'id': 'evento',
-						'mi_id': eventosBD[i][3],
+						'id_evento_calendario': eventosBD[i][3],
 						'id_evento': eventosBD[i][0],
 						'maxUsuarios': eventosBD[i][2]
 					});
+				$(div)
+					.mouseover(function() {
+						div_barra_admin
+							.css({
+								'visibility': 'visible'
+							});
+					})
+					.mouseout(function() {
+						div_barra_admin
+							.css({
+								'visibility': 'hidden'
+							});
+					})
+					.draggable({
+						opacity: 0.75,
+						helper: "clone"
+					})
+					.sortable();
 
-				var div_barra_admin = $('<div>').addClass('barra_admin');
+				var div_barra_admin = 
+					$('<div>')
+						.addClass('barra_admin')
+						.css({
+							'visibility': 'hidden'
+						});
+
+				var div_eliminar = 
+					$('<img>')
+						.addClass('div_eliminar')
+						.attr({
+							'src': 'img/eliminar.gif',
+							'width': '10px',
+							'height': '10px'
+						})
+						.css({
+							'float': 'right'
+						})
+						.mousedown(function(){
+							if($(div).parent().attr('id') !== 'cont-eventos'){
+								var dato = "tipo=delete_evento_calendario&id_evento_calendario="+$(div).attr('id_evento_calendario');
+								$.ajax({
+									type: "POST",
+									url: "admin/eventos.php",
+									data: dato,
+									success: 	function(data){
+											 		if(data!=="0"){
+											 			$(div)
+											 				.remove();
+											 		}
+											 	}
+								});
+							}
+							else{
+								var dato = "tipo=delete_evento&idEvento="+$(div).attr('id_evento');
+								$.ajax({
+									type: "POST",
+									url: "admin/eventos.php",
+									data: dato,
+									success: function(data){
+												 $(div)
+												 	.remove();
+									}
+								});
+							}
+						});
+
+				div_barra_admin.append(div_eliminar);
 
 				div.append(div_barra_admin);
 
-				var div_texto = $('<div>').addClass('texto')
-					.text(eventosBD[i][1]);
+				var div_texto = 
+					$('<div>')
+						.addClass('texto')
+						.text(eventosBD[i][1]);
 
 				div.append(div_texto);
 
-				var div_max_usuarios = $('<div>').addClass('max_usuarios')
-					.text("[Rs "+eventosBD[i][2]+"]");
+				var div_max_usuarios = 
+					$('<div>')
+						.addClass('max_usuarios')
+						.text("[Rs "+eventosBD[i][2]+"]");
 
 				div.append(div_max_usuarios);
 
 				return div;
 			}
 
-			/*$("#cont-eliminar")
-				.droppable({
-					accept: '.evento',
-					drop: 	function(event, ui) {
-								if($(ui.draggable).parent().attr('id') !== 'cont-eventos'){
-									var dato = "tipo=delete_evento_calendario&mi_id="+$(ui.draggable).attr('mi_id');
-									$.ajax({
-									    type: "POST",
-									    url: "admin/eventos.php",
-									    data: dato,
-									    success: function(data){
-									 		if(data!=="0"){
-									 			$(ui.draggable).hide();
-									 		}
-									    }
-									});
-								}
-								else{
-									var dato = "tipo=delete_evento&idEvento="+$(ui.draggable).attr('id_evento');
-									$.ajax({
-									    type: "POST",
-									    url: "admin/eventos.php",
-									    data: dato,
-									    success: function(data){
-									 	
-									    }
-									});
-								}
-							}
-				});*/
-
 			$("#btn_crea_evento").click(function(){
-				$('.error').hide();
-				$('#respuesta_evento').hide();
+				clearInputs("#form_evento");
 			});
 			
 			$("#btn_inserta_evento").click(function(){
@@ -282,11 +301,20 @@
 					$('#max_error').hide();
 					if(!($.isNumeric(max))){
 						$("label#max_numeric_error").show();
+						$("input#max_usuarios").focus();
 						return false;
 					}
 					else{
 						$("label#max_numeric_error").hide();
 						max = max.substring(0,3);
+						if(parseInt(max)===0){
+							$("label#max_cero_error").show();
+							$("input#max_usuarios").focus();
+							return false;
+						}
+						else{
+							$("label#max_cero_error").hide();
+						}
 					}
 				}
 				var dato="tipo=insert_evento&evento="+evento+"&max_usuarios="+max;
@@ -299,18 +327,27 @@
 					    		var eventosBD = jQuery.parseJSON(data);
 						      	for(var i in eventosBD){
 									var evento = creaEvento(i, eventosBD);
-						      		$("#cont-eventos").append(evento);
+						      		$("#cont-eventos").prepend(evento);
 						      	}
 						      	$('#respuesta_evento').show();
 			               		$("#respuesta_evento").html(eventosBD[0][3]); // Mostrar la respuestas del script PHP.
 					    	}
 			           	}
 			    });
-				$("input").val("");
+			    clearInputs("#form_evento");
+			    $('#respuesta_evento').hide();
 			    return false; // Evitar ejecutar el submit del formulario.
 			});
 
-			/*$("#btn_crea_usuario").click(function(){
+			function clearInputs(selector){
+				$(selector+" :input").each(function(){
+					$(this).val('');
+				});
+				$('.error').hide();
+				
+			}
+
+			$("#btn_crea_usuario").click(function(){
 				$('.error').hide();
 				$('#respuesta_usuario').hide();
 			});
@@ -352,33 +389,31 @@
 			               	$("#respuesta_usuario").html(data); // Mostrar la respuestas del script PHP.
 			           	}
 			    });
-				$("input").val("");
+				clearInputs("#form_usuario");
+			    $('#respuesta_evento').hide();
 			    return true; // Evitar ejecutar el submit del formulario.
-			});*/
+			});
 		});
 	</script>
 
 </head>
 <body>
 	<div class="cuerpo_principal">
-		<table id="tabla">
-			<div id="cont-eliminar">
-				<img src="img/borrar.png"><p>
-				<span>Arrastra el evento aquí para eliminarlo</span>
-			</div>
-			<div id="cont-usuarios">
-				<!-- Button trigger modal -->
-				<button id="btn_crea_usuario" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal_2">
-					Crear usuario
-				</button><p>
-			</div>
-			<div id="cont-eventos">
-				<!-- Button trigger modal -->
-				<button id="btn_crea_evento" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal_1">
-					Crear evento
-				</button><p>
-			</div>
-		</table>
+		<div id="cont-usuarios">
+			<!-- Button trigger modal -->
+			<button id="btn_crea_usuario" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal_2">
+				Crear usuario
+			</button><p>
+		</div>
+		<div id="cont-btn-evento">
+			<!-- Button trigger modal -->
+			<button id="btn_crea_evento" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal_1">
+				Crear evento
+			</button><p>
+			<div id="cont-eventos"></div>
+		</div>
+		<!--Aquí se crea el calendario-->
+		<table id="tabla"></table>
 	</div>
 	<!-- Modal -->
 	<div class="modal fade" id="myModal_1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -392,16 +427,17 @@
 			        <form id="form_evento" action="" method="post">
 						<p>
 							<label for="evento">Nombre de evento
-								<input name="evento" type="text" id="evento" size=30 maxlength="10">
+								<input name="evento" type="text" id="evento" size="30" maxlength="10">
 							</label><p>
 							<label class="error" for="evento" id="evento_error">Introduce el nombre del evento.</label>
 						</p>
 						<p>
 							<label for="maximo">Máximo de usuarios
-								<input name="max_usuarios" type="number" id="max_usuarios" size=10 min=0 maxlength="3">
+								<input name="max_usuarios" type="number" id="max_usuarios" size="10" min="0" maxlength="3">
 							</label><p>
 							<label class="error" for="maximo" id="max_error">Introduce el numero máximo de usuarios</label>
 							<label class="error" for="maximo" id="max_numeric_error">Introduce un número</label>
+							<label class="error" for="maximo" id="max_cero_error">Introduce un máximo de usuarios</label>
 							</p>
 						<p>
 							<span id="respuesta_evento"></span>
@@ -427,27 +463,32 @@
 			        <form id="form_usuario" action="" method="post">
 						<p>
 							<label for="usuario">Nombre de usuario
-								<input name="usuario" type="text" id="usuario" size=30>
+								<input name="usuario" type="text" id="usuario" size="30" maxlength="30">
 							</label><p>
-							<label class="error" for="usuario" id="usuario_error">Introduce el nombre del evento.</label>
+							<label class="error" for="usuario" id="usuario_error">Introduce el nombre del usuario</label>
 						</p>
 						<p>
 							<label for="pwd_1">Password
-								<input name="pwd_1" type="password" id="pwd_1" size=30>
+								<input name="pwd_1" type="password" id="pwd_1" size="30" maxlength="15">
 							</label><p>
-							<label class="error" for="pwd_1" id="pwd_1_error">Introduce el nombre del evento.</label>
-							<label class="error" for="pwd_1" id="pwd_error">Las contraseñas no coinciden.</label>
+							<label class="error" for="pwd_1" id="pwd_1_error">Introduce la contraseña</label>
+							<label class="error" for="pwd_1" id="pwd_error">Las contraseñas no coinciden</label>
 						</p>
 						<p>
 							<label for="pwd_2">Repite password 
-								<input name="pwd_2" type="password" id="pwd_2" size=30>
+								<input name="pwd_2" type="password" id="pwd_2" size="30" maxlength="15">
 							</label><p>
-							<label class="error" for="pwd_2" id="pwd_2_error">Introduce el nombre del evento.</label>
-							<label class="error" for="pwd_2" id="pwd_error">Las contraseñas no coinciden.</label>
+							<label class="error" for="pwd_2" id="pwd_2_error">Introduce la contraseña</label>
+							<label class="error" for="pwd_2" id="pwd_error">Las contraseñas no coinciden</label>
 						</p>
 						<p>
 							<label for="email">E-mail
-								<input name="email" type="text" id="email" size=30>
+								<input name="email" type="text" id="email" size="30" maxlength="50">
+							</label>
+						</p>
+						<p>
+							<label for="telefono">Teléfono
+								<input name="telefono" type="number" id="telefono" size="30" maxlength="9">
 							</label>
 						</p>
 						<p>

@@ -11,6 +11,10 @@
 		$max_usuarios = addslashes(htmlspecialchars($_POST["max_usuarios"]));
 		insert_evento($nombre_evento, $max_usuarios);
 	}
+	else if($tipo=="delete_evento"){
+		$id_evento = addslashes(htmlspecialchars($_POST["idEvento"]));
+		delete_evento($id_evento);
+	}
 	else if($tipo=="select_eventos_calendario"){
 		select_eventos_calendario();
 	}
@@ -29,13 +33,21 @@
 		update_evento_calendario($id_evento,$x_post,$y_post,$x_ant,$y_ant);
 	}
 	else if($tipo=="delete_evento_calendario"){
-		$mi_id = addslashes(htmlspecialchars($_POST["mi_id"]));
-		delete_evento_calendario($mi_id);
+		$id_evento_calendario = addslashes(htmlspecialchars($_POST["id_evento_calendario"]));
+		delete_evento_calendario($id_evento_calendario);
 	}
 
+	/**********************
+	***********************
+	*******FUNCIONES*******
+	***********************
+	***********************
+	**********************/
+
 	function select_eventos(){
+		$sql=mysql_query("SELECT id,nombre,max_usuarios FROM eventos");
+		
 		$array[][]="";
-		$sql=mysql_query("SELECT * FROM eventos");
 		$i=0;
 		while($file=mysql_fetch_array($sql)){
 			$array[$i][0]=$file['id'];
@@ -43,7 +55,14 @@
 			$array[$i][2]=$file['max_usuarios'];
 			$i++;
 		}
-		echo json_encode($array);
+		$result = json_encode($array);
+		
+		if($result == '[[""]]'){
+			echo "0";
+		}
+		else{
+			echo $result;
+		}
 	}
 
 	function insert_evento($nombre_evento, $max_usuarios){
@@ -68,6 +87,10 @@
 		}
 	}
 
+	function delete_evento($id_evento){
+		$sql = mysql_query("DELETE FROM eventos WHERE id='$id_evento' ");
+	}
+
 	function select_eventos_calendario(){
 		$array[][]="";
 		$sql=mysql_query("SELECT eventos.id, eventos.nombre, eventos.max_usuarios, evento_calendario.id AS mi_id, evento_calendario.x, evento_calendario.y, evento_calendario.estado FROM eventos, evento_calendario WHERE eventos.id=evento_calendario.id_evento");
@@ -82,12 +105,24 @@
 			$array[$i][6]=$file['estado'];
 			$i++;
 		}
-		echo json_encode($array);
+		$result = json_encode($array);
+		
+		if($result == '[[""]]'){
+			echo "0";
+		}
+		else{
+			echo $result;
+		}
 	}
 
 	function insert_evento_calendario($id_evento,$x_post,$y_post){
 		$sql = mysql_query("INSERT INTO evento_calendario (id_evento,x,y,estado) 
 						VALUES ('$id_evento','$x_post','$y_post',1)");
+		$sql = mysql_query("SELECT MAX(id) AS id FROM evento_calendario");
+		$file=mysql_fetch_array($sql);
+		$id=$file['id'];
+		$id = json_encode($id);
+		echo $id;
 	}
 
 	function update_evento_calendario($id_evento, $x_post, $y_post, $x_ant, $y_ant){
@@ -97,8 +132,8 @@
 		$sql=mysql_query("UPDATE evento_calendario SET x='$x_post', y='$y_post' WHERE id='$id'");
 	}
 
-	function delete_evento_calendario($mi_id){
-		$sql = mysql_query("DELETE FROM evento_calendario WHERE id='$mi_id' ");
+	function delete_evento_calendario($id_evento_calendario){
+		$sql = mysql_query("DELETE FROM evento_calendario WHERE id='$id_evento_calendario' ");
 		if(!$sql){
 			echo "0";
 		}
