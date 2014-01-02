@@ -1,25 +1,31 @@
 -- phpMyAdmin SQL Dump
--- version OVH
+-- version 4.0.4
 -- http://www.phpmyadmin.net
 --
--- Servidor: mysql51-97.perso
--- Tiempo de generación: 26-12-2013 a las 15:22:05
--- Versión del servidor: 5.1.66
--- Versión de PHP: 5.3.8
+-- Servidor: localhost
+-- Tiempo de generaciÃ³n: 02-01-2014 a las 18:11:04
+-- VersiÃ³n del servidor: 5.6.12-log
+-- VersiÃ³n de PHP: 5.4.12
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Base de datos: `crossfit`
 --
+CREATE DATABASE IF NOT EXISTS `crossfit` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `crossfit`;
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `eventos`
---
--- Creación: 21-12-2013 a las 18:58:13
 --
 
 CREATE TABLE IF NOT EXISTS `eventos` (
@@ -27,14 +33,12 @@ CREATE TABLE IF NOT EXISTS `eventos` (
   `nombre` varchar(30) NOT NULL,
   `max_usuarios` int(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=52 ;
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `evento_calendario`
---
--- Creación: 25-12-2013 a las 11:10:32
 --
 
 CREATE TABLE IF NOT EXISTS `evento_calendario` (
@@ -45,31 +49,30 @@ CREATE TABLE IF NOT EXISTS `evento_calendario` (
   `estado` int(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_evento` (`id_evento`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuarios`
 --
--- Creación: 20-12-2013 a las 12:46:24
---
 
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(30) NOT NULL,
-  `pass` varchar(15) NOT NULL,
+  `nombre` varchar(20) NOT NULL,
+  `apellidos` varchar(50) NOT NULL,
+  `pass` varchar(20) NOT NULL,
   `email` varchar(50) NOT NULL,
-  `bonos` int(5) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
+  `telefono` int(9) NOT NULL,
+  `dni` varchar(9) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dni` (`dni`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuario_evento`
---
--- Creación: 22-12-2013 a las 12:50:30
 --
 
 CREATE TABLE IF NOT EXISTS `usuario_evento` (
@@ -79,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `usuario_evento` (
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   KEY `id_evento` (`id_evento`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Restricciones para tablas volcadas
@@ -95,5 +98,9 @@ ALTER TABLE `evento_calendario`
 -- Filtros para la tabla `usuario_evento`
 --
 ALTER TABLE `usuario_evento`
-  ADD CONSTRAINT `usuario_evento_ibfk_3` FOREIGN KEY (`id_evento`) REFERENCES `evento_calendario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `usuario_evento_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `usuario_evento_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuario_evento_ibfk_3` FOREIGN KEY (`id_evento`) REFERENCES `evento_calendario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

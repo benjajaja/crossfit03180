@@ -4,6 +4,7 @@
 	<title>Crossfit03180</title>
 	<link rel="stylesheet" href="css/main.css"/>
 	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="css/jquery-ui.css"/>
 	<script src="js/jquery-1.9.1.js"></script>
 	<script src="js/jquery-ui.js"></script>
 	<script src="js/moment.min.js"></script>
@@ -17,15 +18,14 @@
 			$('#tabla, #cont-eventos').css('KhtmlUserSelect', 'none');//el safari por ejemplo	
 
 			var array_horas = ['8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
-			var array_dias = ['Lun','Mar','Mie','Jue','Vie','Sab','Dom'];
+			var array_dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 
 			//recoge el dia y el mes actual
 			var d=new Date();
 			var diaNum = d.getDay();
 			var mesNum = d.getMonth()+1;
-			var anyoNum = d.getFullYear();
-			var diasDelMes = moment().daysInMonth();
-			
+			//var ultimoDiaDelMes = moment().daysInMonth();
+			var dates = [new Date()];
 			if(diaNum===0)
 				diaNum=7;
 
@@ -38,33 +38,23 @@
 			tr.append(td);
 
 			//recorre de 1 a 7 (días de la semana) y crea una celda para cada día con el nombre del día, el número de día y mes
-			var numCeldaHoy;
 			for(var i=1; i<8;i++){
 				var td = $("<td>")
 						.addClass('dias')
 						.attr('id',array_dias[i-1])
 						.text(function(){
 							if(i===diaNum){//si es el dia actual
-								numCeldaHoy = i;
-								return array_dias[i-1]+" "+moment().date()+"/"+mesNum+"/"+anyoNum;
+								return array_dias[i-1]+" "+moment().date();
 							}
 							else{//si no es el dia actual
 								if(i<diaNum){
 									var dif = diaNum-i;
-									return array_dias[i-1]+" "+moment().subtract('day', dif).date()+"/"+mesNum+"/"+anyoNum;
+									return array_dias[i-1]+" "+moment().subtract('day', dif).date();
+									
 								}
 								else if(i>diaNum){
 									var dif = i-diaNum;
-									if(moment().add('day', dif).date()===1){//si el dia a mostrar es 1, suma 1 al numero del mes o pone a 1 si el numero de mes es 12
-										if(mesNum===12){
-											mesNum=1;
-											anyoNum=anyoNum+1;
-										}
-										else{
-											mesNum = mesNum+1;
-										}
-									}
-									return array_dias[i-1]+" "+moment().add('day', dif).date()+"/"+mesNum+"/"+anyoNum;
+									return array_dias[i-1]+" "+moment().add('day', dif).date();
 								}
 							}
 						});
@@ -339,60 +329,101 @@
 			    return false; // Evitar ejecutar el submit del formulario.
 			});
 
-			function clearInputs(selector){
-				$(selector+" :input").each(function(){
-					$(this).val('');
-				});
-				$('.error').hide();
-				
-			}
-
 			$("#btn_crea_usuario").click(function(){
-				$('.error').hide();
-				$('#respuesta_usuario').hide();
+				clearInputs("#form_usuario");
 			});
+
 			$("#btn_inserta_usuario").click(function(){
 				//Obtenemos el valor de los campos
-				var usuario = $("input#usuario").val();
-				var pwd_1 = $("input#pwd_1").val();
-				var pwd_2 = $("input#pwd_2").val();
+				var nombre = $("input#nombre").val();
+				var apellidos = $("input#apellidos").val();
+				var dni = $("input#dni").val();
+				var pwd1 = $("input#pwd1").val();
+				var pwd2 = $("input#pwd2").val();
 				var email = $("input#email").val();
+				var telefono = $("input#telefono").val();
+
 
 				//Validamos el campo nombre, simplemente miramos que no esté vacío
-				if (usuario === "") {
-					$("label#usuario_error").show();
-					$("input#usuario").focus();
+				if (nombre === "") {
+					$("label#nombre_error").show();
+					$("input#nombre").focus();
 					return false;
 				}
-				if(pwd_1 === ""){
+				else{
+					$('#nombre_error').hide();
+					nombre = nombre.substring(0,20);
+				}
+				if (apellidos === "") {
+					$("label#apellidos_error").show();
+					$("input#apellidos").focus();
+					return false;
+				}
+				else{
+					$('#apellidos_error').hide();
+					apellidos = apellidos.substring(0,30);
+				}
+				if (dni === "") {
+					$("label#dni_error").show();
+					$("input#dni").focus();
+					return false;
+				}
+				else{
+					$('#dni_error').hide();
+					if(dni.length!==9){
+						$("label#dni_tam_error").show();
+						$("input#dni").focus();
+						return false;
+					}
+					else{
+						$('#dni_tam_error').hide();
+					}
+				}
+				if(pwd1 === ""){
 					$("label#pwd1_error").show();
 					$("input#pwd1").focus();
 					return false;
 				}
-				if(pwd_2 === ""){
+				else{
+					$('#pwd1_error').hide();
+				}
+				if(pwd2 === ""){
 					$("label#pwd2_error").show();
 					$("input#pwd2").focus();
 					return false;
 				}
-
-				if(pwd_1 !== pwd_2){
+				else{
+					$('#pwd2_error').hide();
+				}
+				if(pwd1 !== pwd2){
 					$("label#pwd_error").show();
 					$("input#pwd1,input#pwd2").focus();
 					return false;
 				}
-
+				else{
+					$('#pwd_error').hide();
+				}
+				var dato="tipo=insert_user&nombre="+nombre+"&apellidos="+apellidos+"&pass="+pwd1+"&email="+email+"&telefono="+telefono+"&dni="+dni;
 			    $.ajax({
 			           	type: "POST",
-			           	url: "admin/inserta_usuario.php",
-			           	data: $("#form_usuario").serialize(), // Adjuntar los campos del formulario enviado.
+			           	url: "admin/usuarios.php",
+			           	data: dato, // Adjuntar los campos del formulario enviado.
 			           	success: function(data){
+			           		$('#respuesta_usuario').show();
 			               	$("#respuesta_usuario").html(data); // Mostrar la respuestas del script PHP.
 			           	}
 			    });
 				clearInputs("#form_usuario");
 			    $('#respuesta_evento').hide();
-			    return true; // Evitar ejecutar el submit del formulario.
+			    return false; // Evitar ejecutar el submit del formulario.
 			});
+
+			function clearInputs(selector){
+				$(selector+" :input").each(function(){
+					$(this).val('');
+				});
+				$('.error').hide();
+			}
 		});
 	</script>
 
@@ -415,7 +446,7 @@
 		<!--Aquí se crea el calendario-->
 		<table id="tabla"></table>
 	</div>
-	<!-- Modal -->
+	<!-- Modal 1-->
 	<div class="modal fade" id="myModal_1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  	<div class="modal-dialog">
 	    	<div class="modal-content">
@@ -424,16 +455,16 @@
 	        		<h4 class="modal-title" id="myModalLabel">Registrar evento</h4>
 	      		</div>
 		      	<div class="modal-body">
-			        <form id="form_evento" action="" method="post">
+			        <form id="form_evento" method="post">
 						<p>
 							<label for="evento">Nombre de evento
-								<input name="evento" type="text" id="evento" size="30" maxlength="10">
+								<input name="evento" type="text" id="evento" size="30" maxlength="10" autocomplete="off">
 							</label><p>
 							<label class="error" for="evento" id="evento_error">Introduce el nombre del evento.</label>
 						</p>
 						<p>
 							<label for="maximo">Máximo de usuarios
-								<input name="max_usuarios" type="number" id="max_usuarios" size="10" min="0" maxlength="3">
+								<input name="max_usuarios" type="number" id="max_usuarios" size="10" maxlength="3" autocomplete="off">
 							</label><p>
 							<label class="error" for="maximo" id="max_error">Introduce el numero máximo de usuarios</label>
 							<label class="error" for="maximo" id="max_numeric_error">Introduce un número</label>
@@ -451,7 +482,7 @@
 	    	</div><!-- /.modal-content -->
 	  	</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-	<!-- Modal -->
+	<!-- Modal 2-->
 	<div class="modal fade" id="myModal_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  	<div class="modal-dialog">
 	    	<div class="modal-content">
@@ -460,35 +491,48 @@
 	        		<h4 class="modal-title" id="myModalLabel">Registrar usuario</h4>
 	      		</div>
 		      	<div class="modal-body">
-			        <form id="form_usuario" action="" method="post">
+			        <form id="form_usuario" method="post">
 						<p>
-							<label for="usuario">Nombre de usuario
-								<input name="usuario" type="text" id="usuario" size="30" maxlength="30">
+							<label for="nombre">Nombre
+								<input name="nombre" type="text" id="nombre" size="20" maxlength="20" autocomplete="off">
 							</label><p>
-							<label class="error" for="usuario" id="usuario_error">Introduce el nombre del usuario</label>
+							<label class="error" for="nombre" id="nombre_error">Introduce el nombre</label>
 						</p>
 						<p>
-							<label for="pwd_1">Password
-								<input name="pwd_1" type="password" id="pwd_1" size="30" maxlength="15">
+							<label for="apellidos">Apellidos
+								<input name="apellidos" type="text" id="apellidos" size="20" maxlength="30" autocomplete="off">
 							</label><p>
-							<label class="error" for="pwd_1" id="pwd_1_error">Introduce la contraseña</label>
-							<label class="error" for="pwd_1" id="pwd_error">Las contraseñas no coinciden</label>
+							<label class="error" for="apellidos" id="apellidos_error">Introduce los apellidos</label>
 						</p>
 						<p>
-							<label for="pwd_2">Repite password 
-								<input name="pwd_2" type="password" id="pwd_2" size="30" maxlength="15">
+							<label for="dni">DNI
+								<input name="dni" type="text" id="dni" size="20" maxlength="9" autocomplete="off">
 							</label><p>
-							<label class="error" for="pwd_2" id="pwd_2_error">Introduce la contraseña</label>
-							<label class="error" for="pwd_2" id="pwd_error">Las contraseñas no coinciden</label>
+							<label class="error" for="dni" id="dni_error">Introduce el DNI</label>
+							<label class="error" for="dni" id="dni_tam_error">DNI incorrecto</label>
+						</p>
+						<p>
+							<label for="pwd1">Password
+								<input name="pwd1" type="password" id="pwd1" size="20" maxlength="20" autocomplete="off">
+							</label><p>
+							<label class="error" for="pwd1" id="pwd1_error">Introduce la contraseña</label>
+							<label class="error" for="pwd1" id="pwd_error">Las contraseñas no coinciden</label>
+						</p>
+						<p>
+							<label for="pwd2">Repite password 
+								<input name="pwd2" type="password" id="pwd2" size="20" maxlength="20" autocomplete="off">
+							</label><p>
+							<label class="error" for="pwd2" id="pwd2_error">Introduce la contraseña</label>
+							<label class="error" for="pwd2" id="pwd_error">Las contraseñas no coinciden</label>
 						</p>
 						<p>
 							<label for="email">E-mail
-								<input name="email" type="text" id="email" size="30" maxlength="50">
+								<input name="email" type="text" id="email" size="20" maxlength="50" autocomplete="off">
 							</label>
 						</p>
 						<p>
 							<label for="telefono">Teléfono
-								<input name="telefono" type="number" id="telefono" size="30" maxlength="9">
+								<input name="telefono" type="number" id="telefono" size="20" maxlength="9" autocomplete="off">
 							</label>
 						</p>
 						<p>
