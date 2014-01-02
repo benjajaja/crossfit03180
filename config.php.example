@@ -2,13 +2,15 @@
 
 // save YOUR config as config.php (config.php is in .gitignore)
 
-$_GLOBALS['config'] = array(
+return array(
 	'db' => array(
 		'host' => 'localhost',
 		'user' => '',
 		'password' => '',
-		'database' => 'crossfit'
+		'database' => 'crossfit',
+		'salt' => 'supersecreto007'
 	)
 );
+
 
 ?>
