@@ -286,8 +286,11 @@ $(function () {
 				return data;
 			}, {})
 		}).done(function(response) {
-			alert(response);
-		});
+			window.location.reload();
+
+		}).fail(function(response) {
+			alert(response.responseText);
+		})
 	};
 	$('#loginModal form').submit(login);
 	$('#loginModal .btn-primary').click(login);
