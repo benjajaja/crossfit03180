@@ -1,5 +1,4 @@
 body{
-	cursor: pointer;
 	background-color: #2C393B !important;
 	height: 100%;
 }
@@ -78,9 +77,6 @@ td.hora{
 td.clase{
 	height:63px;
 	width:120px;
-}
-.ui-draggable-dragging{
-	cursor: pointer;
 }
 div#cont-usuarios,div#cont-btn-evento,table,td{
 	border: 1px solid #FFF;
