@@ -5,11 +5,12 @@
 	<link rel="stylesheet" href="css/main.css"/>
 	<link rel="stylesheet" href="css/bootstrap.min.css"/>
 	<link rel="stylesheet" href="css/jquery-ui.css"/>
-	<script src="js/jquery-1.9.1.js"></script>
+    <script src="js/jquery-1.9.1.js"></script>
 	<script src="js/jquery-ui.js"></script>
 	<script src="js/moment.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
-	
+	<script src="js/jquery-ui-touch-punch.js"></script>
+
 	<script type="text/javascript">
 		$(function(){
 			//impide que se pueda seleccionar texto en el lugar indicado
@@ -192,8 +193,7 @@
 					.draggable({
 						opacity: 0.75,
 						helper: "clone"
-					})
-					.sortable();
+					});
 
 				var div_barra_admin = 
 					$('<div>')
@@ -259,6 +259,8 @@
 						.text("[Rs "+eventosBD[i][2]+"]");
 
 				div.append(div_max_usuarios);
+
+				//$(div).drag();
 
 				return div;
 			}
@@ -426,6 +428,7 @@
 			}
 		});
 	</script>
+	
 
 </head>
 <body>
@@ -548,4 +551,29 @@
 	  	</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 </body>
+	<script type="text/javascript">
+     /* $.fn.dragg = function() {
+        var offset = null;
+        var start = function(e) {
+          var orig = e.originalEvent;
+          var pos = $(this).position();
+          offset = {
+            x: orig.changedTouches[0].pageX - pos.left,
+            y: orig.changedTouches[0].pageY - pos.top
+          };
+        };
+        var moveMe = function(e) {
+          e.preventDefault();
+          var orig = e.originalEvent;
+          $(this).css({
+            top: orig.changedTouches[0].pageY - offset.y,
+            left: orig.changedTouches[0].pageX - offset.x
+          });
+        };
+        this.bind("touchstart", start);
+        this.bind("touchmove", moveMe);
+      };
+
+      $("#evento").dragg();*/
+    </script>
 </html>
