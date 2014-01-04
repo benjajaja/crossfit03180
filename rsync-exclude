@@ -1,0 +1,7 @@
+.git
+.gitignore
+config.php
+rsync
+rsync-exclude
+calendario/.htaccess
+php.ini
