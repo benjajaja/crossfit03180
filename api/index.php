@@ -36,6 +36,9 @@ $addRoute = function($path, $class, $methods, $handlers = null) use ($db, $route
 };
 
 $addRoute('/auth', 'Auth', ['post', 'delete']);
+
+$addRoute('/calendar', 'Calendar', ['get']);
+
 /* ej.: $addRoute(
 	'/calendar/week/{startDay}',
 	'Week',

@@ -136,7 +136,7 @@
 
 <div class="container-fluid" id="horario">     
 		<h1>Horario de eventos</h1>	
-		<button class="btn" id="loginButton">Acceder...</button>
+		<button class="btn pull-right" id="loginButton">Acceder...</button>
      	<div id='calendar'></div>
 </div>
        	
@@ -178,7 +178,7 @@
 				<h2>Ponte en contacto</h2>
 				
 				<p>Te atenderemos lo antes posible. Puedes enviarnos un email, dejar un mensaje en
-				nuestra página de facebook o twitter, o simplemente acercarte al gimnasio.</p>
+				nuestra página de facebook o twitter, o simplemente acercarte a nuestro Box.</p>
 	
 				<address>
 				  <strong>CrossFit 03180</strong><br>
@@ -237,7 +237,7 @@ $(function () {
 		header: {
 		    left:   'title',
 		    center: '',
-		    right:  'prev,next'
+		    right:  ''
 		},
 
 		allDaySlot: false,
@@ -253,7 +253,9 @@ $(function () {
 		aspectRatio: 0.1, // force full height
 
 		// US Holidays
-		events: 'https://www.google.com/calendar/feeds/g00c1jhsvs6am0p7higlql09uo%40group.calendar.google.com/public/basic',
+		//events: 'https://www.google.com/calendar/feeds/g00c1jhsvs6am0p7higlql09uo%40group.calendar.google.com/public/basic',
+		events: '/api/calendar',
+		//events: [{"title":"asdasd","start":"2014-01-03T14:00:00","end":"2014-01-03T15:00:00"},{"title":"213123123","start":"2014-01-05T11:00:00+01:00","end":"2014-01-05T12:00:00+01:00"},{"title":"aaaaaa","start":"2014-01-05T12:00:00+01:00","end":"2014-01-05T13:00:00+01:00"},{"title":"tesdt","start":"2014-01-06T18:00:00+01:00","end":"2014-01-06T19:00:00+01:00"}],
 		
 		eventClick: function(event) {
 			// opens events in a popup window
