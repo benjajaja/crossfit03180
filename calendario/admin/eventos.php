@@ -6,6 +6,10 @@
 	if($tipo=="select_eventos"){
 		select_eventos();
 	}
+	else if($tipo=="select_evento_eliminado"){
+		$id_evento = addslashes(htmlspecialchars($_POST["idEvento"]));
+		select_evento_eliminado($id_evento);
+	}
 	else if($tipo=="insert_evento"){
 		$nombre_evento = addslashes(htmlspecialchars($_POST["evento"]));
 		$max_usuarios = addslashes(htmlspecialchars($_POST["max_usuarios"]));
@@ -45,7 +49,7 @@
 	**********************/
 
 	function select_eventos(){
-		$sql=mysql_query("SELECT id,nombre,max_usuarios FROM eventos");
+		$sql=mysql_query("SELECT * FROM eventos WHERE NOT EXISTS (SELECT id_evento FROM evento_calendario WHERE eventos.id = evento_calendario.id_evento)");
 		
 		$array[][]="";
 		$i=0;
@@ -65,6 +69,25 @@
 		}
 	}
 
+	function select_evento_eliminado($id_evento){
+		$sql=mysql_query("SELECT * FROM eventos WHERE id='$id_evento'");
+		
+		$array[][]="";
+		if($file=mysql_fetch_array($sql)){
+			$array[0][0]=$file['id'];
+			$array[0][1]=$file['nombre'];
+			$array[0][2]=$file['max_usuarios'];
+		}
+		$result = json_encode($array);
+		
+		if($result == '[[""]]'){
+			echo "0";
+		}
+		else{
+			echo $result;
+		}
+	}
+
 	function insert_evento($nombre_evento, $max_usuarios){
 		$sql = mysql_query("INSERT INTO eventos (nombre, max_usuarios) 
 						VALUES ('$nombre_evento','$max_usuarios')");
@@ -73,7 +96,7 @@
 		}
 		else{
 			$array[][]="";
-			$sql=mysql_query("SELECT id, nombre, max_usuarios FROM eventos WHERE nombre='$nombre_evento' ");
+			$sql=mysql_query("SELECT * FROM eventos WHERE id IN(SELECT MAX(id) AS id FROM eventos)");//selecciona todo donde el id sea el ultimo
 			if($file=mysql_fetch_array($sql)){
 				$array[0][0]=$file['id'];
 				$array[0][1]=$file['nombre'];
