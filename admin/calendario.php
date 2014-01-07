@@ -13,6 +13,9 @@
 
 	<script type="text/javascript">
 		$(function(){
+
+			var dirEventos = "php/eventos.php";
+
 			//impide que se pueda seleccionar texto en el lugar indicado
 			$('#tabla, #cont-eventos').attr('unselectable', 'on');
 			$('#tabla, #cont-eventos').css('MozUserSelect', 'none');//mozilla y derivados
@@ -89,7 +92,7 @@
 													
 													$.ajax({
 													    type: "POST",
-													    url: "admin/eventos.php",
+													    url: dirEventos,
 													    data: dato,
 													    success: 	function(data){
 													    				var id = jQuery.parseJSON(data);
@@ -110,7 +113,7 @@
 													var dato = "tipo=update_evento_calendario&idEvento="+$(ui.draggable).attr('id_evento')+"&x_ant="+$(ui.draggable).attr('x')+"&y_ant="+$(ui.draggable).attr('y')+"&x_post="+$(this).attr('x')+"&y_post="+$(this).attr('y');
 													$.ajax({
 													    type: "POST",
-													    url: "admin/eventos.php",
+													    url: dirEventos,
 													    data: dato
 													});
 												}
@@ -119,8 +122,8 @@
 														x: $(this).attr('x'),
 														y: $(this).attr('y')
 													});
-												$(this)
-													.append(ui.draggable);
+												propiedadesEventoCalendario(ui.draggable);
+												$(this).append(ui.draggable);
 											}
 										}
 							});
@@ -138,19 +141,34 @@
 				$('#tabla').append(tr);//inserta la fila creada a la tabla
 			}
 
+			var propiedadesEventoContador = function(evento){
+				$(evento).css({
+					'margin-bottom': '0.5em',
+					'background-color': '#BCF5A9'
+				});
+			}
+
+			var propiedadesEventoCalendario = function(evento){
+				$(evento).css({
+					'margin-bottom': '0',
+					'background-color': '#f4f4f4'
+				});
+			}
+
 			//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
 			//eventosBD[i][0] = id,
 			//eventosBD[i][1] = nombre,
 			//eventosBD[i][2] = max_usuarios
 			$.ajax({
 				type: "POST",
-				url: "admin/eventos.php",
+				url: dirEventos,
 				data: "tipo=select_eventos",
 				success: function(data){
 				   	if(data !== '0'){
 				    	var eventosBD = jQuery.parseJSON(data);
-					      for(var i in eventosBD){
+					    for(var i in eventosBD){
 							var evento = creaEvento(i, eventosBD);
+							propiedadesEventoContador(evento);
 					      	$("#cont-eventos").append(evento);
 					    }
 				    }
@@ -161,25 +179,26 @@
 			//eventosBD[i][0] = id,
 			//eventosBD[i][1] = nombre,
 			//eventosBD[i][2] = max_usuarios,
-			//eventosBD[i][3] = id,
+			//eventosBD[i][3] = id(evento_calendario),
 			//eventosBD[i][4] = x,
 			//eventosBD[i][5] = y,
 			//eventosBD[i][6] = estado
 			$.ajax({
 			    type: "POST",
-			    url: "admin/eventos.php",
+			    url: dirEventos,
 			    data: "tipo=select_eventos_calendario",
 			    success: function(data){
 			    	if(data !== '0'){
 			    		var eventosBD = jQuery.parseJSON(data);
 				      	for(var i in eventosBD){
-							var objeto = creaEvento(i, eventosBD, "evento_calendario");
-							$(objeto)
+							var evento = creaEvento(i, eventosBD, "evento_calendario");
+							$(evento)
 								.attr({
 									'x': eventosBD[i][4],
 									'y': eventosBD[i][5]
 								});
-				      		$("#clase_"+eventosBD[i][4]+"_"+eventosBD[i][5]).append(objeto);
+							propiedadesEventoCalendario(evento);
+				      		$("#clase_"+eventosBD[i][4]+"_"+eventosBD[i][5]).append(evento);
 				      	}
 			    	}
 			    }
@@ -237,7 +256,7 @@
 								var dato = "tipo=delete_evento_calendario&id_evento_calendario="+$(div).attr('id_evento_calendario');
 								$.ajax({
 									type: "POST",
-									url: "admin/eventos.php",
+									url: dirEventos,
 									data: dato,
 									success: 	function(data){
 											 		if(data!=="0"){
@@ -246,13 +265,13 @@
 											 			var dato = "tipo=select_evento_eliminado&idEvento="+$(div).attr('id_evento');
 														$.ajax({
 															type: "POST",
-															url: "admin/eventos.php",
+															url: dirEventos,
 															data: dato,
 															success: 	function(data){
-																			alert(data);
 																	 		if(data !== '0'){
 																		    	var eventosBD = jQuery.parseJSON(data);
 																				var evento = creaEvento(i, eventosBD);
+																				propiedadesEventoContador(evento);
 																			    $("#cont-eventos").append(evento);
 																		    }
 																	 	}
@@ -265,11 +284,10 @@
 								var dato = "tipo=delete_evento&idEvento="+$(div).attr('id_evento');
 								$.ajax({
 									type: "POST",
-									url: "admin/eventos.php",
+									url: dirEventos,
 									data: dato,
 									success: function(data){
-												 $(div)
-												 	.remove();
+												 $(div).remove();
 									}
 								});
 							}
@@ -343,13 +361,14 @@
 				var dato="tipo=insert_evento&evento="+evento+"&max_usuarios="+max;
 			    $.ajax({
 			           	type: "POST",
-			           	url: "admin/eventos.php",
+			           	url: dirEventos,
 			           	data: dato, // Adjuntar los campos del formulario enviado.
 			           	success: function(data){
 			               	if(data !== '[[""]]'){
 					    		var eventosBD = jQuery.parseJSON(data);
 						      	for(var i in eventosBD){
 									var evento = creaEvento(i, eventosBD);
+									propiedadesEventoContador(evento);
 						      		$("#cont-eventos").append(evento);
 						      	}
 						      	$('#respuesta_evento').show();
@@ -380,8 +399,8 @@
 			<button id="btn_crea_evento" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal_1">
 				Crear evento
 			</button><p>
-			<div id="cont-eventos"></div>
 		</div>
+		<div id="cont-eventos"></div>
 		<!--Aquí se crea el calendario-->
 		<table id="tabla"></table>
 	</div>

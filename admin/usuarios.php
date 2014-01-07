@@ -11,21 +11,26 @@
 
 	<script type="text/javascript">
 		$(function(){
+
+			var dirUsuarios = "php/usuarios.php";
+			
 			//impide que se pueda seleccionar texto en el lugar indicado
 			$('#tabla, #cont-eventos').attr('unselectable', 'on');
 			$('#tabla, #cont-eventos').css('MozUserSelect', 'none');//mozilla y derivados
 			$('#tabla, #cont-eventos').css('KhtmlUserSelect', 'none');//el safari por ejemplo	
 
 			var tr = $('<tr>');
-			var td = $('<td>').addClass('datos').text("Nombre");
+			var td = $('<td>').addClass('titulo id');
 			tr.append(td);
-			var td = $('<td>').addClass('datos').text("Apellidos");
+			var td = $('<td align="center">').addClass('titulo').text("Nombre");
 			tr.append(td);
-			var td = $('<td>').addClass('datos').text("Email");
+			var td = $('<td align="center">').addClass('titulo').text("Apellidos");
 			tr.append(td);
-			var td = $('<td>').addClass('datos').text("Teléfono");
+			var td = $('<td align="center">').addClass('titulo').text("Email");
 			tr.append(td);
-			var td = $('<td>').addClass('datos').text("DNI");
+			var td = $('<td align="center">').addClass('titulo').text("Teléfono");
+			tr.append(td);
+			var td = $('<td align="center">').addClass('titulo').text("DNI");
 			tr.append(td);
 
 			$('#tabla').append(tr);//inserta la fila creada a la tabla
@@ -40,34 +45,38 @@
 			//usersBD[i][6] = dni
 			$.ajax({
 			    type: "POST",
-			    url: "admin/usuarios.php",
+			    url: dirUsuarios,
 			    data: "tipo=select_users",
 			    success: function(data){
 			    	if(data !== '0'){
 			    		var usersBD = jQuery.parseJSON(data);
 				      	for(var i in usersBD){
 							var tr = $('<tr>');
-							var tdNombre = $('<td>')
+							var numero = $('<td align="center">')
+										.addClass('datos')
+										.text(i);
+							tr.append(numero);
+							var tdNombre = $('<td align="center">')
 										.addClass('datos nombre')
 										.text(usersBD[i][1]);
 							tr.append(tdNombre);
 							
-							var tdApellidos = $('<td>')
+							var tdApellidos = $('<td align="center">')
 										.addClass('datos apellidos')
 										.text(usersBD[i][2]);
 							tr.append(tdApellidos);
 							
-							var tdEmail = $('<td>')
+							var tdEmail = $('<td align="center">')
 										.addClass('datos email')
 										.text(usersBD[i][4]);
 							tr.append(tdEmail);
 
-							var tdTelefono = $('<td>')
+							var tdTelefono = $('<td align="center">')
 										.addClass('datos telefono')
 										.text(usersBD[i][5]);
 							tr.append(tdTelefono);
 
-							var tdDni = $('<td>')
+							var tdDni = $('<td align="center">')
 										.addClass('datos dni')
 										.text(usersBD[i][6]);
 							tr.append(tdDni);
@@ -156,7 +165,7 @@
 				var dato="tipo=insert_user&nombre="+nombre+"&apellidos="+apellidos+"&pass="+pwd1+"&email="+email+"&telefono="+telefono+"&dni="+dni;
 			    $.ajax({
 			           	type: "POST",
-			           	url: "admin/usuarios.php",
+			           	url: dirUsuarios,
 			           	data: dato, // Adjuntar los campos del formulario enviado.
 			           	success: function(data){
 			           		$('#respuesta_usuario').show();

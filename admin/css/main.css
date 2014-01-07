@@ -17,11 +17,13 @@ div#cont-btn-evento{
 	left: 0.5em;
 	top: 1em;
 	padding: 0.5em;
-	width: 12em;
 }
 div#cont-eventos{
+	position: absolute;
+	left: 0.5em;
+	top: 7em;
 	padding: 0.5em;
-	width: 12em;
+	width: 11em;
 }
 div.evento{
 	height: 60px;
@@ -32,14 +34,8 @@ div.evento{
 	max-width:137px;
 	word-wrap: break-word;
 	border: 0.5px solid #000;
-	background: #f4f4f4; /* Old browsers */
-	background: -moz-linear-gradient(top,  #f4f4f4 0%, #eaeae7 99%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(99%,#eaeae7)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  #f4f4f4 0%,#eaeae7 99%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  #f4f4f4 0%,#eaeae7 99%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top,  #f4f4f4 0%,#eaeae7 99%); /* IE10+ */
-	background: linear-gradient(to bottom,  #f4f4f4 0%,#eaeae7 99%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#eaeae7',GradientType=0 ); /* IE6-9 */
+	background-color: #f4f4f4;
+	z-index: 1;
 }
 div.evento div.barra_admin{
 	width: 100%; 
@@ -95,12 +91,28 @@ td.clase{
 	min-width:130px;
 	max-width:130px;
 }
-div#cont-usuarios,div#cont-btn-evento,table,td{
-	border: 1px solid #FFF;
+div#cont-eventos,table,td{
+	border: 2px solid #FFF;
 }
 label.error{
 	color: red;
 }
+td.titulo{
+	color: #fff;
+	width: 220px;
+	min-width:220px;
+	max-width:220px;
+	font-size: 20px;
+	font-weight:bold;
+	background-color: #000;
+	height: 60px;
+}
 td.datos{
 	color: #fff;
+	font-size: 18px;
+}
+td.id{
+	width: 60px;
+	min-width:60px;
+	max-width:60px;
 }
