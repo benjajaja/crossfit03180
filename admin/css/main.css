@@ -70,7 +70,7 @@ td.dias{
 	min-width:140px;
 	max-width:140px;
 	background-color:#000;
-	color: #FFFFFF;
+	color: #ccc;
 	font-weight: bold;
 }
 td.hora{
@@ -81,7 +81,7 @@ td.hora{
 	width:60px;
 	min-width:60px;
 	max-width:60px;
-	color: #fff;
+	color: #ccc;
 }
 td.clase{
 	height:63px;
@@ -92,13 +92,13 @@ td.clase{
 	max-width:130px;
 }
 div#cont-eventos,table,td{
-	border: 2px solid #FFF;
+	border: 1px solid #ccc;
 }
 label.error{
 	color: red;
 }
 td.titulo{
-	color: #fff;
+	color: #ccc;
 	width: 220px;
 	min-width:220px;
 	max-width:220px;
@@ -108,8 +108,9 @@ td.titulo{
 	height: 60px;
 }
 td.datos{
-	color: #fff;
+	color: #ccc;
 	font-size: 18px;
+	background-color: rgba(12, 48, 73, 50);
 }
 td.id{
 	width: 60px;

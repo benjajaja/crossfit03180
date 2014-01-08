@@ -19,22 +19,84 @@
 			$('#tabla, #cont-eventos').css('MozUserSelect', 'none');//mozilla y derivados
 			$('#tabla, #cont-eventos').css('KhtmlUserSelect', 'none');//el safari por ejemplo	
 
+			var imgOrden = function(td, clase){
+				var img = $('<img>')
+					.attr({
+						'src': 'img/asc.png',
+						'width': '30px',
+						'height': '30px',
+						'orden': 'asc'
+					})
+					.css({
+						'float': 'right'
+					})
+					.addClass(clase)
+					.mousedown(function(){
+						if($(this).attr("orden")==="asc"){
+							$(this).attr({
+								'src': 'img/desc.png',
+								'orden': 'desc'
+							});
+							var dato = "tipo=select_users&clase="+clase+"&dato=DESC";
+
+							$.ajax({
+								type: "POST",
+								url: dirUsuarios,
+								data: dato,
+								success: 	function(data){
+												$(".datos").remove();
+												var usersBD = jQuery.parseJSON(data);
+												actualizaUsers(usersBD);
+											}
+							});
+						}
+						else{
+							$(this).attr({
+								'src': 'img/asc.png',
+								'orden': 'asc'
+							});
+							var dato = "tipo=select_users&clase="+clase+"&dato=ASC";
+
+							$.ajax({
+								type: "POST",
+								url: dirUsuarios,
+								data: dato,
+								success: 	function(data){
+												$(".datos").remove();
+												var usersBD = jQuery.parseJSON(data);
+												actualizaUsers(usersBD);
+											}
+							});
+						}
+					});
+				td.append(img);
+			}
+
 			var tr = $('<tr>');
-			var td = $('<td>').addClass('titulo id');
+			
+			var td = $('<td align="center">').addClass('titulo nombre').text("Nombre");
+			imgOrden(td,"nombre");
 			tr.append(td);
-			var td = $('<td align="center">').addClass('titulo').text("Nombre");
+			
+			var td = $('<td align="center">').addClass('titulo apellidos').text("Apellidos");
+			imgOrden(td,"apellidos");
 			tr.append(td);
-			var td = $('<td align="center">').addClass('titulo').text("Apellidos");
+			
+			var td = $('<td align="center">').addClass('titulo email').text("Email");
+			imgOrden(td,"email");
 			tr.append(td);
-			var td = $('<td align="center">').addClass('titulo').text("Email");
+			
+			var td = $('<td align="center">').addClass('titulo telefono').text("Teléfono");
+			imgOrden(td,"telefono");
 			tr.append(td);
-			var td = $('<td align="center">').addClass('titulo').text("Teléfono");
-			tr.append(td);
-			var td = $('<td align="center">').addClass('titulo').text("DNI");
+			
+			var td = $('<td align="center">').addClass('titulo dni').text("DNI");
+			imgOrden(td,"dni");
+
 			tr.append(td);
 
 			$('#tabla').append(tr);//inserta la fila creada a la tabla
-
+			
 			//usersBD es un array bidimensional el cual devuelve las siguientes posiciones
 			//usersBD[i][0] = id,
 			//usersBD[i][1] = nombre,
@@ -43,50 +105,51 @@
 			//usersBD[i][4] = email,
 			//usersBD[i][5] = telefono,
 			//usersBD[i][6] = dni
+			var dato = "tipo=select_users&clase=nombre&dato=ASC";
 			$.ajax({
-			    type: "POST",
-			    url: dirUsuarios,
-			    data: "tipo=select_users",
-			    success: function(data){
-			    	if(data !== '0'){
-			    		var usersBD = jQuery.parseJSON(data);
-				      	for(var i in usersBD){
-							var tr = $('<tr>');
-							var numero = $('<td align="center">')
-										.addClass('datos')
-										.text(i);
-							tr.append(numero);
-							var tdNombre = $('<td align="center">')
-										.addClass('datos nombre')
-										.text(usersBD[i][1]);
-							tr.append(tdNombre);
-							
-							var tdApellidos = $('<td align="center">')
-										.addClass('datos apellidos')
-										.text(usersBD[i][2]);
-							tr.append(tdApellidos);
-							
-							var tdEmail = $('<td align="center">')
-										.addClass('datos email')
-										.text(usersBD[i][4]);
-							tr.append(tdEmail);
-
-							var tdTelefono = $('<td align="center">')
-										.addClass('datos telefono')
-										.text(usersBD[i][5]);
-							tr.append(tdTelefono);
-
-							var tdDni = $('<td align="center">')
-										.addClass('datos dni')
-										.text(usersBD[i][6]);
-							tr.append(tdDni);
-
-							$('#tabla').append(tr);//inserta la fila creada a la tabla
-				      	}
-
-			    	}
-			    }
+				type: "POST",
+				url: dirUsuarios,
+				data: dato,
+				success: function(data){
+				  	if(data !== '0'){
+				   		var usersBD = jQuery.parseJSON(data);
+				      	actualizaUsers(usersBD);
+				   	}
+				}
 			});
+			
+			function actualizaUsers(usersBD){
+				for(var i in usersBD){
+					var tr = $('<tr>');
+
+					var tdNombre = $('<td align="center">')
+								.addClass('datos nombre')
+								.text(usersBD[i][1]);
+					tr.append(tdNombre);
+					
+					var tdApellidos = $('<td align="center">')
+								.addClass('datos apellidos')
+								.text(usersBD[i][2]);
+					tr.append(tdApellidos);
+							
+					var tdEmail = $('<td align="center">')
+								.addClass('datos email')
+								.text(usersBD[i][4]);
+					tr.append(tdEmail);
+
+					var tdTelefono = $('<td align="center">')
+								.addClass('datos telefono')
+								.text(usersBD[i][5]);
+					tr.append(tdTelefono);
+
+					var tdDni = $('<td align="center">')
+								.addClass('datos dni')
+								.text(usersBD[i][6]);
+					tr.append(tdDni);
+
+					$('#tabla').append(tr);//inserta la fila creada a la tabla
+		      	}
+			}
 
 			$("#btn_crea_usuario").click(function(){
 				clearInputs("#form_usuario");
@@ -162,14 +225,16 @@
 				else{
 					$('#pwd_error').hide();
 				}
-				var dato="tipo=insert_user&nombre="+nombre+"&apellidos="+apellidos+"&pass="+pwd1+"&email="+email+"&telefono="+telefono+"&dni="+dni;
+				var dato = "tipo=insert_user&nombre="+nombre+"&apellidos="+apellidos+"&pass="+pwd1+"&email="+email+"&telefono="+telefono+"&dni="+dni;
 			    $.ajax({
 			           	type: "POST",
 			           	url: dirUsuarios,
-			           	data: dato, // Adjuntar los campos del formulario enviado.
+			           	data: dato,
 			           	success: function(data){
+			           		var usersBD = jQuery.parseJSON(data);
 			           		$('#respuesta_usuario').show();
-			               	$("#respuesta_usuario").html(data); // Mostrar la respuestas del script PHP.
+			               	$("#respuesta_usuario").html(usersBD[0][7]); //Mostrar la respuestas del script PHP
+			               	actualizaUsers(usersBD);
 			           	}
 			    });
 				clearInputs("#form_usuario");

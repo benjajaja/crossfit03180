@@ -3,7 +3,7 @@
 
 	$tipo = addslashes(htmlspecialchars($_POST["tipo"]));
 	
-	if($tipo=="insert_user"){
+	if($tipo==="insert_user"){
 		$nombre = addslashes(htmlspecialchars($_POST["nombre"]));
 		$apellidos = addslashes(htmlspecialchars($_POST["apellidos"]));
 		$pass = addslashes(htmlspecialchars($_POST["pass"]));
@@ -12,8 +12,10 @@
 		$dni = addslashes(htmlspecialchars($_POST["dni"]));
 		insert_user($nombre,$apellidos,$pass,$email,$telefono,$dni);
 	}
-	else if($tipo=="select_users"){
-		select_users();
+	else if($tipo==="select_users"){
+		$clase = addslashes(htmlspecialchars($_POST["clase"]));
+		$dato = addslashes(htmlspecialchars($_POST["dato"]));
+		select_users($clase, $dato);
 	}
 
 	/**********************
@@ -33,7 +35,23 @@
 				echo "<p style='color:red'>Charly, algo ha fallado al insertar el usuario...</p>";
 			}
 			else{
-				echo "<p style='color:blue'>Usuario insertado</p>";
+				$array[][]="";
+				$sql=mysql_query("SELECT * FROM usuarios WHERE id IN(SELECT MAX(id) AS id FROM usuarios)");//selecciona todo donde el id sea el ultimo
+				
+				if($file=mysql_fetch_array($sql)){
+					$array[0][0]=$file['id'];
+					$array[0][1]=$file['nombre'];
+					$array[0][2]=$file['apellidos'];
+					$array[0][3]=$file['pass'];
+					$array[0][4]=$file['email'];
+					$array[0][5]=$file['telefono'];
+					$array[0][6]=$file['dni'];
+					$array[0][7]="<p style='color:blue'>Usuario insertado</p>";
+					echo json_encode($array);
+				}
+				else{
+					echo "<p style='color:red'>Charly, algo ha fallado al insertar el usuario...</p>";
+				}
 			}
 		}
 		else{
@@ -41,8 +59,8 @@
 		}
 	}
 
-	function select_users(){
-		$sql=mysql_query("SELECT * FROM usuarios");
+	function select_users($clase, $dato){
+		$sql=mysql_query("SELECT * FROM usuarios ORDER BY ".$clase." ".$dato);
 		
 		$array[][]="";
 		$i=0;
