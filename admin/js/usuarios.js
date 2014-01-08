@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<head>
-	<meta charset="utf-8">
-	<title>Panel admin - Usuarios</title>
-	<link rel="stylesheet" href="css/main.css"/>
-	<link rel="stylesheet" href="css/bootstrap.min.css"/>
-	<link rel="stylesheet" href="css/jquery-ui.css"/>
-    <script src="js/jquery-1.9.1.js"></script>
-	<script src="js/jquery-ui.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-
-	<script type="text/javascript">
-		$(function(){
+$(function(){
 
 			var dirUsuarios = "php/usuarios.php";
 			
@@ -186,6 +174,7 @@
 			}
 
 			$("#btn_crea_usuario").click(function(){
+				$('#respuesta_usuario').hide();
 				clearInputs("#form_usuario");
 			});
 
@@ -290,7 +279,6 @@
 			           	}
 			    });
 				clearInputs("#form_usuario");
-			    $('#respuesta_usuario').hide();
 			    return false; // Evitar ejecutar el submit del formulario.
 			});
 
@@ -300,84 +288,29 @@
 				});
 				$('.error').hide();
 			}
+
+			$('#btn_crea_pass').mousedown(function() {
+				$('#pass').html(password(8));
+			});
+
+			function password(length, special) {
+			  	var iteration = 0;
+			  	var password = "";
+			  	var randomNumber;
+			  	if(special == undefined){
+			      	var special = false;
+			  	}
+			  	while(iteration < length){
+			    	randomNumber = (Math.floor((Math.random() * 100)) % 94) + 33;
+			    	if(!special){
+			      		if ((randomNumber >=33) && (randomNumber <=47)) { continue; }
+			      		if ((randomNumber >=58) && (randomNumber <=64)) { continue; }
+			      		if ((randomNumber >=91) && (randomNumber <=96)) { continue; }
+			      		if ((randomNumber >=123) && (randomNumber <=126)) { continue; }
+			    	}
+			    	iteration++;
+			    	password += String.fromCharCode(randomNumber);
+			  	}
+			  	return password;
+			}
 		});
-	</script>
-	
-</head>
-<body>
-	<div class="cuerpo_principal">
-		<div id="cont-usuarios">
-			<!-- Button trigger modal -->
-			<button id="btn_crea_usuario" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal_2">
-				Crear usuario
-			</button><p>
-		</div>
-		<!--Aquí se crea la tabla de usuarios-->
-		<table id="tabla"></table>
-	</div>
-	<div class="modal fade" id="myModal_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	  	<div class="modal-dialog">
-	    	<div class="modal-content">
-	      		<div class="modal-header">
-	        		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        		<h4 class="modal-title" id="myModalLabel">Registrar usuario</h4>
-	      		</div>
-		      	<div class="modal-body">
-			        <form id="form_usuario" method="post">
-						<p>
-							<label for="nombre">Nombre
-								<input name="nombre" type="text" id="nombre" size="20" maxlength="20" autocomplete="off">
-							</label><p>
-							<label class="error" for="nombre" id="nombre_error">Introduce el nombre</label>
-						</p>
-						<p>
-							<label for="apellidos">Apellidos
-								<input name="apellidos" type="text" id="apellidos" size="20" maxlength="30" autocomplete="off">
-							</label><p>
-							<label class="error" for="apellidos" id="apellidos_error">Introduce los apellidos</label>
-						</p>
-						<p>
-							<label for="dni">DNI
-								<input name="dni" type="text" id="dni" size="20" maxlength="9" autocomplete="off">
-							</label><p>
-							<label class="error" for="dni" id="dni_error">Introduce el DNI</label>
-							<label class="error" for="dni" id="dni_tam_error">DNI incorrecto</label>
-						</p>
-						<p>
-							<label for="pwd1">Password
-								<input name="pwd1" type="password" id="pwd1" size="20" maxlength="20" autocomplete="off">
-							</label><p>
-							<label class="error" for="pwd1" id="pwd1_error">Introduce la contraseña</label>
-							<label class="error" for="pwd1" id="pwd_error">Las contraseñas no coinciden</label>
-						</p>
-						<p>
-							<label for="pwd2">Repite password 
-								<input name="pwd2" type="password" id="pwd2" size="20" maxlength="20" autocomplete="off">
-							</label><p>
-							<label class="error" for="pwd2" id="pwd2_error">Introduce la contraseña</label>
-							<label class="error" for="pwd2" id="pwd_error">Las contraseñas no coinciden</label>
-						</p>
-						<p>
-							<label for="email">E-mail
-								<input name="email" type="text" id="email" size="20" maxlength="50" autocomplete="off">
-							</label>
-						</p>
-						<p>
-							<label for="telefono">Teléfono
-								<input name="telefono" type="number" id="telefono" size="20" maxlength="9" autocomplete="off">
-							</label>
-						</p>
-						<p>
-							<span id="respuesta_usuario"></span>
-						</p>
-						<div class="modal-footer">
-				        	<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-				        	<button type="submit" class="btn btn-primary" id="btn_inserta_usuario" name="Submit" value="Enviar">Guardar</button>
-				      	</div>
-					</form>	 
-		      	</div>
-	    	</div><!-- /.modal-content -->
-	  	</div><!-- /.modal-dialog -->
-	</div><!-- /.modal -->
-</body>
-</html>

@@ -17,13 +17,17 @@ div#cont-btn-evento{
 	left: 0.5em;
 	top: 1em;
 	padding: 0.5em;
+	width: 12em;
+}
+.miboton{
+	width: 100%;
 }
 div#cont-eventos{
 	position: absolute;
 	left: 0.5em;
-	top: 7em;
+	top: 10em;
 	padding: 0.5em;
-	width: 11em;
+	width: 12em;
 }
 div.evento{
 	height: 60px;
