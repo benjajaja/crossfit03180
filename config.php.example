@@ -1,0 +1,16 @@
+<?php
+
+// save YOUR config as config.php (config.php is in .gitignore)
+
+return array(
+	'db' => array(
+		'host' => 'localhost',
+		'user' => '',
+		'password' => '',
+		'database' => 'crossfit',
+		'salt' => 'supersecreto007'
+	)
+);
+
+
+?>
