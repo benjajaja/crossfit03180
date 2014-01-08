@@ -112,8 +112,12 @@ td.datos{
 	font-size: 18px;
 	background-color: rgba(12, 48, 73, 50);
 }
-td.id{
+td.eliminar{
 	width: 60px;
 	min-width:60px;
 	max-width:60px;
+}
+#respuesta_usuario,#respuesta_evento{
+	color:red;
+	font-weight: bold;
 }

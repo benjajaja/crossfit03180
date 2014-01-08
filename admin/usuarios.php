@@ -37,8 +37,7 @@
 								'src': 'img/desc.png',
 								'orden': 'desc'
 							});
-							var dato = "tipo=select_users&clase="+clase+"&dato=DESC";
-
+							var dato = "tipo=select_users&query=ORDER BY "+clase+" DESC";
 							$.ajax({
 								type: "POST",
 								url: dirUsuarios,
@@ -55,8 +54,7 @@
 								'src': 'img/asc.png',
 								'orden': 'asc'
 							});
-							var dato = "tipo=select_users&clase="+clase+"&dato=ASC";
-
+							var dato = "tipo=select_users&query=ORDER BY "+clase+" ASC";
 							$.ajax({
 								type: "POST",
 								url: dirUsuarios,
@@ -92,7 +90,11 @@
 			
 			var td = $('<td align="center">').addClass('titulo dni').text("DNI");
 			imgOrden(td,"dni");
+			tr.append(td);
 
+			var td = $('<td align="center">').addClass('titulo eliminar');
+			var imgEliminar = $('<img src="img/eliminar.gif">');
+			td.append(imgEliminar);
 			tr.append(td);
 
 			$('#tabla').append(tr);//inserta la fila creada a la tabla
@@ -105,7 +107,7 @@
 			//usersBD[i][4] = email,
 			//usersBD[i][5] = telefono,
 			//usersBD[i][6] = dni
-			var dato = "tipo=select_users&clase=nombre&dato=ASC";
+			var dato = "tipo=select_users&query=";
 			$.ajax({
 				type: "POST",
 				url: dirUsuarios,
@@ -146,6 +148,38 @@
 								.addClass('datos dni')
 								.text(usersBD[i][6]);
 					tr.append(tdDni);
+
+					var tdEliminar = $('<td align="center">')
+								.addClass('datos eliminar');
+					var button = $('<button>')
+								.addClass('btn_eliminar btn btn-default')
+								.css({
+									'background-image': 'url(img/eliminar.gif)',
+									'background-repeat': 'no-repeat',
+									'background-position': 'center',
+									'height': '30px',
+									'width': '40px'
+								})
+								.attr({
+									'id': usersBD[i][0]
+								})
+								.mousedown(function() {
+									var dato = "tipo=delete_user&id="+$(this).attr('id');
+									$.ajax({
+										type: "POST",
+										url: dirUsuarios,
+										data: dato,
+										success: function(data){
+										  	if(data !== '0'){
+										  		$(".datos").remove();
+										   		var usersBD = jQuery.parseJSON(data);
+										      	actualizaUsers(usersBD);
+										   	}
+										}
+									});
+								});
+					tdEliminar.append(button);
+					tr.append(tdEliminar);
 
 					$('#tabla').append(tr);//inserta la fila creada a la tabla
 		      	}
@@ -231,14 +265,32 @@
 			           	url: dirUsuarios,
 			           	data: dato,
 			           	success: function(data){
-			           		var usersBD = jQuery.parseJSON(data);
 			           		$('#respuesta_usuario').show();
-			               	$("#respuesta_usuario").html(usersBD[0][7]); //Mostrar la respuestas del script PHP
-			               	actualizaUsers(usersBD);
+			           		var usersBD = jQuery.parseJSON(data);
+
+			           		if(usersBD === 0){
+			           			$("#respuesta_usuario").html("Charly, ese DNI ya existe.")
+			           			.css({
+				               		'color': 'red'
+				               	});
+			           		}
+			           		else if(usersBD === 1){
+			           			$("#respuesta_usuario").html("Charly, algo ha fallado al insertar el usuario...")
+			           			.css({
+				               		'color': 'red'
+				               	});
+			           		}
+			           		else if(usersBD !== 0 && usersBD !== 1){
+				               	$("#respuesta_usuario").html(usersBD[0][7])
+				               	.css({
+				               		'color': 'blue'
+				               	}); 
+				               	actualizaUsers(usersBD);
+				            }
 			           	}
 			    });
 				clearInputs("#form_usuario");
-			    $('#respuesta_evento').hide();
+			    $('#respuesta_usuario').hide();
 			    return false; // Evitar ejecutar el submit del formulario.
 			});
 
@@ -256,7 +308,7 @@
 	<div class="cuerpo_principal">
 		<div id="cont-usuarios">
 			<!-- Button trigger modal -->
-			<button id="btn_crea_usuario" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal_2">
+			<button id="btn_crea_usuario" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal_2">
 				Crear usuario
 			</button><p>
 		</div>

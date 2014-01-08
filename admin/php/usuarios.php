@@ -13,9 +13,12 @@
 		insert_user($nombre,$apellidos,$pass,$email,$telefono,$dni);
 	}
 	else if($tipo==="select_users"){
-		$clase = addslashes(htmlspecialchars($_POST["clase"]));
-		$dato = addslashes(htmlspecialchars($_POST["dato"]));
-		select_users($clase, $dato);
+		$query = addslashes(htmlspecialchars($_POST["query"]));
+		select_users($query);
+	}
+	else if($tipo==="delete_user"){
+		$id = addslashes(htmlspecialchars($_POST["id"]));
+		delete_user($id);
 	}
 
 	/**********************
@@ -32,11 +35,11 @@
 			$sql = mysql_query("INSERT INTO usuarios (nombre,apellidos,pass,email,telefono,dni) 
 						VALUES ('$nombre','$apellidos','$pass','$email','$telefono','$dni')");
 			if(!$sql){
-				echo "<p style='color:red'>Charly, algo ha fallado al insertar el usuario...</p>";
+				echo "1";
 			}
 			else{
 				$array[][]="";
-				$sql=mysql_query("SELECT * FROM usuarios WHERE id IN(SELECT MAX(id) AS id FROM usuarios)");//selecciona todo donde el id sea el ultimo
+				$sql=mysql_query("SELECT * FROM usuarios WHERE id IN(SELECT MAX(id) AS id FROM usuarios)");//selecciona todo del ultimo id
 				
 				if($file=mysql_fetch_array($sql)){
 					$array[0][0]=$file['id'];
@@ -50,18 +53,18 @@
 					echo json_encode($array);
 				}
 				else{
-					echo "<p style='color:red'>Charly, algo ha fallado al insertar el usuario...</p>";
+					echo "1";
 				}
 			}
 		}
 		else{
-			echo "<p style='color:red'>Charly, ese DNI ya existe en la base de datos</p>";
+			echo "0";
 		}
 	}
 
-	function select_users($clase, $dato){
-		$sql=mysql_query("SELECT * FROM usuarios ORDER BY ".$clase." ".$dato);
-		
+	function select_users($query){
+		$sql=mysql_query("SELECT * FROM usuarios ".$query);
+
 		$array[][]="";
 		$i=0;
 		while($file=mysql_fetch_array($sql)){
@@ -76,11 +79,22 @@
 		}
 		$result = json_encode($array);
 		
-		if($result == '[[""]]'){
+		if($result === '[[""]]'){
 			echo "0";
 		}
 		else{
 			echo $result;
+		}
+	}
+
+	function delete_user($id){
+		$sql = mysql_query("DELETE FROM usuarios WHERE id=".$id);
+
+		if(!$sql){
+			echo "0";
+		}
+		else{
+			echo select_users("");
 		}
 	}
 ?>

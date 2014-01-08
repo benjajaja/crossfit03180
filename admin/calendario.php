@@ -260,8 +260,6 @@
 									data: dato,
 									success: 	function(data){
 											 		if(data!=="0"){
-											 			$(div).remove();
-
 											 			var dato = "tipo=select_evento_eliminado&idEvento="+$(div).attr('id_evento');
 														$.ajax({
 															type: "POST",
@@ -270,12 +268,13 @@
 															success: 	function(data){
 																	 		if(data !== '0'){
 																		    	var eventosBD = jQuery.parseJSON(data);
-																				var evento = creaEvento(i, eventosBD);
+																				var evento = creaEvento(0, eventosBD);
 																				propiedadesEventoContador(evento);
 																			    $("#cont-eventos").append(evento);
 																		    }
 																	 	}
 														});
+														$(div).remove();
 											 		}
 											 	}
 								});
@@ -362,7 +361,7 @@
 			    $.ajax({
 			           	type: "POST",
 			           	url: dirEventos,
-			           	data: dato, // Adjuntar los campos del formulario enviado.
+			           	data: dato, 
 			           	success: function(data){
 			               	if(data !== '[[""]]'){
 					    		var eventosBD = jQuery.parseJSON(data);
@@ -390,13 +389,12 @@
 		});
 	</script>
 	
-
 </head>
 <body>
 	<div class="cuerpo_principal">
 		<div id="cont-btn-evento">
 			<!-- Button trigger modal -->
-			<button id="btn_crea_evento" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal_1">
+			<button id="btn_crea_evento" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal_1">
 				Crear evento
 			</button><p>
 		</div>
