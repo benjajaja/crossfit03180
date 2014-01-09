@@ -78,7 +78,6 @@ td.dias{
 	font-weight: bold;
 }
 td.hora{
-	text-align: right;
 	height:40px;
 	min-height:40px;
 	max-height:40px;
@@ -86,6 +85,7 @@ td.hora{
 	min-width:60px;
 	max-width:60px;
 	color: #ccc;
+	font-weight: bold;
 }
 td.clase{
 	height:63px;

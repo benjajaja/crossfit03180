@@ -24,17 +24,17 @@
 	}
 	else if($tipo=="insert_evento_calendario"){
 		$id_evento = addslashes(htmlspecialchars($_POST["idEvento"]));
-		$x_post = addslashes(htmlspecialchars($_POST["x_post"]));
-		$y_post = addslashes(htmlspecialchars($_POST["y_post"]));
-		insert_evento_calendario($id_evento,$x_post,$y_post);
+		$fecha = addslashes(htmlspecialchars($_POST["fecha"]));
+		$hora = addslashes(htmlspecialchars($_POST["hora"]));
+		insert_evento_calendario($id_evento,$fecha,$hora);
 	}
 	else if($tipo=="update_evento_calendario"){
 		$id_evento = addslashes(htmlspecialchars($_POST["idEvento"]));
-		$x_post = addslashes(htmlspecialchars($_POST["x_post"]));
-		$y_post = addslashes(htmlspecialchars($_POST["y_post"]));
-		$x_ant = addslashes(htmlspecialchars($_POST["x_ant"]));
-		$y_ant = addslashes(htmlspecialchars($_POST["y_ant"]));
-		update_evento_calendario($id_evento,$x_post,$y_post,$x_ant,$y_ant);
+		$fecha_post = addslashes(htmlspecialchars($_POST["fecha_post"]));
+		$hora_post = addslashes(htmlspecialchars($_POST["hora_post"]));
+		$fecha_ant = addslashes(htmlspecialchars($_POST["fecha_ant"]));
+		$hora_ant = addslashes(htmlspecialchars($_POST["hora_ant"]));
+		update_evento_calendario($id_evento,$fecha_post,$hora_post,$fecha_ant,$hora_ant);
 	}
 	else if($tipo=="delete_evento_calendario"){
 		$id_evento_calendario = addslashes(htmlspecialchars($_POST["id_evento_calendario"]));
@@ -116,15 +116,15 @@
 
 	function select_eventos_calendario(){
 		$array[][]="";
-		$sql=mysql_query("SELECT eventos.id, eventos.nombre, eventos.max_usuarios, evento_calendario.id AS mi_id, evento_calendario.x, evento_calendario.y, evento_calendario.estado FROM eventos, evento_calendario WHERE eventos.id=evento_calendario.id_evento");
+		$sql=mysql_query("SELECT eventos.id, eventos.nombre, eventos.max_usuarios, evento_calendario.id AS mi_id, evento_calendario.fecha, evento_calendario.hora, evento_calendario.estado FROM eventos, evento_calendario WHERE eventos.id=evento_calendario.id_evento");
 		$i=0;
 		while($file=mysql_fetch_array($sql)){
 			$array[$i][0]=$file['id'];
 			$array[$i][1]=$file['nombre'];
 			$array[$i][2]=$file['max_usuarios'];
 			$array[$i][3]=$file['mi_id'];
-			$array[$i][4]=$file['x'];
-			$array[$i][5]=$file['y'];
+			$array[$i][4]=$file['fecha'];
+			$array[$i][5]=$file['hora'];
 			$array[$i][6]=$file['estado'];
 			$i++;
 		}
@@ -138,9 +138,9 @@
 		}
 	}
 
-	function insert_evento_calendario($id_evento,$x_post,$y_post){
-		$sql = mysql_query("INSERT INTO evento_calendario (id_evento,x,y,estado) 
-						VALUES ('$id_evento','$x_post','$y_post',1)");
+	function insert_evento_calendario($id_evento,$fecha,$hora){
+		$sql = mysql_query("INSERT INTO evento_calendario (id_evento,fecha,hora,estado) 
+						VALUES ('$id_evento','$fecha','$hora',1)");
 		$sql = mysql_query("SELECT MAX(id) AS id FROM evento_calendario");
 		$file=mysql_fetch_array($sql);
 		$id=$file['id'];
@@ -148,11 +148,11 @@
 		echo $id;
 	}
 
-	function update_evento_calendario($id_evento, $x_post, $y_post, $x_ant, $y_ant){
-		$sql = mysql_query("SELECT id FROM evento_calendario WHERE id_evento='$id_evento' AND x='$x_ant' AND y='$y_ant' ");
+	function update_evento_calendario($id_evento,$fecha_post,$hora_post,$fecha_ant,$hora_ant){
+		$sql = mysql_query("SELECT id FROM evento_calendario WHERE id_evento = '$id_evento' AND fecha = '$fecha_ant' AND hora = '$hora_ant' ");
 		$file=mysql_fetch_array($sql);
 		$id=$file['id'];
-		$sql=mysql_query("UPDATE evento_calendario SET x='$x_post', y='$y_post' WHERE id='$id'");
+		$sql=mysql_query("UPDATE evento_calendario SET fecha = '$fecha_post', hora = '$hora_post' WHERE id = '$id'");
 	}
 
 	function delete_evento_calendario($id_evento_calendario){
