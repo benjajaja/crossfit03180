@@ -53,8 +53,8 @@ $(function(){
 				});
 		tr.append(td);
 	}
-
-	$("#tabla").append(tr);//agrega todas las celdas creadas a la tabla
+	//agrega todas las celdas creadas a la tabla
+	$("#tabla").append(tr);
 
 	//inserta una fila por cada hora
 	for(var i=0;i<array_horas.length;i++){
@@ -134,14 +134,14 @@ $(function(){
 		$('#tabla').append(tr);//inserta la fila creada a la tabla
 	}
 
-	var propiedadesEventoContador = function(evento){
+	function propiedadesEventoContador(evento){
 		$(evento).css({
 			'margin-bottom': '0.5em',
 				'background-color': '#BCF5A9'
 		});
 	}
 
-	var propiedadesEventoCalendario = function(evento){
+	function propiedadesEventoCalendario(evento){
 		$(evento).css({
 			'margin-bottom': '0',
 			'background-color': '#f4f4f4'
@@ -230,13 +230,13 @@ $(function(){
 				.css({
 					'visibility': 'hidden'
 				});
-		var div_eliminar = 
+		var img_eliminar = 
 			$('<img>')
 				.addClass('div_eliminar')
 				.attr({
-					'src': 'img/eliminar.gif',
-					'width': '10px',
-					'height': '10px'
+					'src': 'img/eliminar.png',
+					'width': '15px',
+					'height': '15px'
 				})
 				.css({
 					'float': 'right'
@@ -281,7 +281,7 @@ $(function(){
 						});
 					}
 				});
-		div_barra_admin.append(div_eliminar);
+		div_barra_admin.append(img_eliminar);
 		div.append(div_barra_admin);
 		var div_texto = $('<div>')
 							.addClass('texto')
@@ -294,9 +294,44 @@ $(function(){
 		return div;
 	}
 	
+	function errorInput(input){
+		$(input).focus().css({
+				'background-color': 'rgb(242, 222, 222)',
+				'border-color': 'rgb(235, 204, 209)'
+			});
+	}
+
+	function okInput(input){
+		$(input).css({
+				'background-color': 'rgb(255, 255, 255)',
+				'border-color': 'rgb(204, 204, 204)'
+			});
+	}
+
+	function clearInputs(selector){
+		$(selector+" :input").each(function(){
+			$(this).val('');
+		});
+		okInput('input');
+	}
+
+	function showPlaceholder(input,texto){
+		$(input)
+			.attr({
+				'placeholder': texto
+			});
+	}
+
+	function resetPlaceholder(input,texto){
+		$(input)
+			.attr({
+				'placeholder': texto
+			});
+	}
+
 	$("#btn_crea_evento").click(function(){
 		$('#respuesta_evento').hide();
-			clearInputs("#form_evento");
+		clearInputs("#form_evento");
 	});
 			
 	$("#btn_inserta_evento").click(function(){
@@ -306,36 +341,42 @@ $(function(){
 
 		//Validamos el campo nombre, simplemente miramos que no esté vacío
 		if (evento === "") {
-			$("label#evento_error").show();
-			$("input#evento").focus();
+			errorInput("input#evento");
+			showPlaceholder('input#evento', 'Inserta el nombre del evento');
 			return false;
 		}
 		else{
-			$('#evento_error').hide();
+			okInput('input#evento');
+			resetPlaceholder('input#evento', 'Nombre');
 			evento = evento.substring(0,10);
 		}
 		if(max === ""){
-			$("label#max_error").show();
-			$("input#max_usuarios").focus();
+			errorInput("input#max_usuarios");
+			showPlaceholder('input#max_usuarios', 'Inserta el número de usuarios');
 			return false;
 		}
 		else{
-			$('#max_error').hide();
+			okInput('input#max_usuarios');
+			resetPlaceholder('input#max_usuarios', 'Límite usuarios');
 			if(!($.isNumeric(max))){
-				$("label#max_numeric_error").show();
-				$("input#max_usuarios").focus();
+				errorInput("input#max_usuarios");
+				showPlaceholder('input#max_usuarios', 'Inserta un número');
+				$('input#max_usuarios').val('');
 				return false;
 			}
 			else{
-				$("label#max_numeric_error").hide();
+				okInput('input#max_usuarios');
+				resetPlaceholder('input#max_usuarios', 'Límite usuarios');
 				max = max.substring(0,3);
 				if(parseInt(max)===0){
-					$("label#max_cero_error").show();
-					$("input#max_usuarios").focus();
+					errorInput("input#max_usuarios");
+					showPlaceholder('input#max_usuarios', 'Inserta un número válido');
+					$('input#max_usuarios').val('');
 					return false;
 				}
 				else{
-					$("label#max_cero_error").hide();
+					okInput('input#max_usuarios');
+					resetPlaceholder('input#max_usuarios', 'Límite usuarios');
 				}
 			}
 		}
@@ -360,11 +401,4 @@ $(function(){
 	    clearInputs("#form_evento");
 	    return false; // Evitar ejecutar el submit del formulario.
 	});
-
-	function clearInputs(selector){
-		$(selector+" :input").each(function(){
-			$(this).val('');
-		});
-		$('.error').hide();
-	}
 });

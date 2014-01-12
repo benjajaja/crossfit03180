@@ -15,81 +15,59 @@
 		<div id="cont-usuarios">
 			<a href="./"><button class="miboton btn btn-primary btn-lg">Admin</button></a><p><p>
 			<!-- Button trigger modal -->
-			<button id="btn_crea_usuario" class="miboton btn btn-default btn-lg" data-toggle="modal" data-target="#myModal_1">
+			<button id="btn_crea_usuario" class="miboton btn btn-default btn-lg" data-toggle="modal" data-target="#myModal_registro">
 				Crear usuario
 			</button><p>
-			<button id="btn_crea_pass" class="miboton btn btn-default btn-lg" data-toggle="modal" data-target="#myModal_2">
+			<button id="btn_crea_pass" class="miboton btn btn-default btn-lg" data-toggle="modal" data-target="#myModal_password">
 				Generar password
 			</button><p>
 		</div>
 		<!--Aquí se crea la tabla de usuarios-->
-		<table id="tabla"></table>
+		<table id="tabla_users"></table>
 	</div>
-	<div class="modal fade" id="myModal_1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="myModal_registro" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="true">
 	  	<div class="modal-dialog">
 	    	<div class="modal-content">
 	      		<div class="modal-header">
 	        		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	        		<h4 class="modal-title" id="myModalLabel">Registrar usuario</h4>
 	      		</div>
-		      	<div class="modal-body" align="center">
-			        <form id="form_usuario" method="post">
-						<p>
-							<label for="nombre">
-								<input name="nombre" type="text" id="nombre" size="20" maxlength="20" autocomplete="off" placeholder="Nombre">
-							</label><p>
-							<label class="error" for="nombre" id="nombre_error">Introduce el nombre</label>
-						</p>
-						<p>
-							<label for="apellidos">
-								<input name="apellidos" type="text" id="apellidos" size="20" maxlength="30" autocomplete="off" placeholder="Apellidos">
-							</label><p>
-							<label class="error" for="apellidos" id="apellidos_error">Introduce los apellidos</label>
-						</p>
-						<p>
-							<label for="dni">
-								<input name="dni" type="text" id="dni" size="20" maxlength="9" autocomplete="off" placeholder="DNI">
-							</label><p>
-							<label class="error" for="dni" id="dni_error">Introduce el DNI</label>
-							<label class="error" for="dni" id="dni_tam_error">DNI incorrecto</label>
-						</p>
-						<p>
-							<label for="pwd1">
-								<input name="pwd1" type="password" id="pwd1" size="20" maxlength="20" autocomplete="off" placeholder="Password">
-							</label><p>
-							<label class="error" for="pwd1" id="pwd1_error">Introduce la contraseña</label>
-							<label class="error" for="pwd1" id="pwd_error">Las contraseñas no coinciden</label>
-						</p>
-						<p>
-							<label for="pwd2">
-								<input name="pwd2" type="password" id="pwd2" size="20" maxlength="20" autocomplete="off" placeholder="Repite">
-							</label><p>
-							<label class="error" for="pwd2" id="pwd2_error">Introduce la contraseña</label>
-							<label class="error" for="pwd2" id="pwd_error">Las contraseñas no coinciden</label>
-						</p>
-						<p>
-							<label for="email">
-								<input name="email" type="text" id="email" size="20" maxlength="50" autocomplete="off" placeholder="E-mail">
-							</label>
-						</p>
-						<p>
-							<label for="telefono">
-								<input name="telefono" type="number" id="telefono" size="20" maxlength="9" autocomplete="off" placeholder="Teléfono">
-							</label>
-						</p>
-						<p>
+		      	<div class="modal-body">
+			        <form class="form-horizontal" role="form" id="form_usuario">
+						<div class="form-group">
+							<input class="form-control" name="nombre" type="text" id="nombre" maxlength="20" autocomplete="off" placeholder="Nombre">
+						</div>
+						<div class="form-group">
+							<input class="form-control" name="apellidos" type="text" id="apellidos" maxlength="30" autocomplete="off" placeholder="Apellidos">
+						</div>
+						<div class="form-group">
+							<input class="form-control" name="dni" type="text" id="dni" maxlength="9" autocomplete="off" placeholder="DNI">
+						</div>
+						<div class="form-group">
+							<input class="form-control" name="pwd1" type="password" id="pwd1" maxlength="20" autocomplete="off" placeholder="Password">
+						</div>
+						<div class="form-group">
+							<input class="form-control" name="pwd2" type="password" id="pwd2" maxlength="20" autocomplete="off" placeholder="Repite password">
+						</div>
+						<div class="form-group">
+							<input class="form-control" name="email" type="text" id="email" maxlength="30" autocomplete="off" placeholder="E-mail">
+						</div>
+						<div class="form-group">
+							<input class="form-control" name="telefono" type="number" id="telefono" maxlength="9" autocomplete="off" placeholder="Teléfono">
+						</div>
+						<div class="form-group">
 							<span id="respuesta_usuario"></span>
-						</p>
+						</div>
 						<div class="modal-footer">
 				        	<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-				        	<button type="submit" class="btn btn-primary" id="btn_inserta_usuario" name="Submit" value="Enviar">Guardar</button>
+				        	<button type="submit" class="btn btn-primary" id="btn_inserta_usuario" name="Submit" value="Enviar">Registrar</button>
 				      	</div>
 					</form>	 
 		      	</div>
 	    	</div><!-- /.modal-content -->
 	  	</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-	<div class="modal fade" id="myModal_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="myModal_password" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  	<div class="modal-dialog">
 	    	<div class="modal-content">
 	      		<div class="modal-header">

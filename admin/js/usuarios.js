@@ -2,10 +2,10 @@ $(function(){
 	var dirUsuarios = "php/usuarios.php";
 			
 	//impide que se pueda seleccionar texto en el lugar indicado
-	$('#tabla, #cont-eventos').attr('unselectable', 'on');
-	$('#tabla, #cont-eventos').css('MozUserSelect', 'none');//mozilla y derivados
-	$('#tabla, #cont-eventos').css('KhtmlUserSelect', 'none');//el safari por ejemplo	
-
+	$('#tabla_users, #cont-eventos').attr('unselectable', 'on');
+	$('#tabla_users, #cont-eventos').css('MozUserSelect', 'none');//mozilla y derivados
+	$('#tabla_users, #cont-eventos').css('KhtmlUserSelect', 'none');//el safari por ejemplo	
+	
 	var imgOrden = function(td, clase){
 		var img = $('<img>')
 			.attr({
@@ -79,11 +79,11 @@ $(function(){
 	tr.append(td);
 
 	var td = $('<td align="center">').addClass('titulo eliminar');
-	var imgEliminar = $('<img src="img/eliminar.gif">');
+	var imgEliminar = $('<img src="img/eliminar.png" widht="30" height="30">');
 	td.append(imgEliminar);
 	tr.append(td);
 
-	$('#tabla').append(tr);//inserta la fila creada a la tabla
+	$('#tabla_users').append(tr);//inserta la fila creada a la tabla
 			
 	//usersBD es un array bidimensional el cual devuelve las siguientes posiciones
 	//usersBD[i][0] = id,
@@ -136,17 +136,13 @@ $(function(){
 
 			var tdEliminar = $('<td align="center">')
 						.addClass('datos eliminar');
-			var button = $('<button>')
-						.addClass('btn_eliminar btn btn-default')
-						.css({
-							'background-image': 'url(img/eliminar.gif)',
-							'background-repeat': 'no-repeat',
-							'background-position': 'center',
-							'height': '30px',
-							'width': '40px'
-						})
+			var img_eliminar = 
+					$('<img>')
 						.attr({
-							'id': usersBD[i][0]
+							'id': usersBD[i][0],
+							'src': 'img/eliminar.png',
+							'width': '30px',
+							'height': '30px'
 						})
 						.mousedown(function() {
 							var dato = "tipo=delete_user&id="+$(this).attr('id');
@@ -163,11 +159,47 @@ $(function(){
 								}
 							});
 						});
-			tdEliminar.append(button);
+			tdEliminar.append(img_eliminar);
 			tr.append(tdEliminar);
 
-			$('#tabla').append(tr);//inserta la fila creada a la tabla
+			$('#tabla_users').append(tr);//inserta la fila creada a la tabla
       	}
+	}
+
+	function errorInput(input){
+		$(input).focus()
+			.css({
+				'background-color': 'rgb(242, 222, 222)',
+				'border-color': 'rgb(235, 204, 209)'
+			});
+	}
+
+	function okInput(input){
+		$(input).css({
+				'background-color': 'rgb(255, 255, 255)',
+				'border-color': 'rgb(204, 204, 204)'
+			});
+	}
+
+	function clearInputs(selector){
+		$(selector+" :input").each(function(){
+			$(this).val('');
+		});
+		okInput('input');
+	}
+
+	function showPlaceholder(input,texto){
+		$(input)
+			.attr({
+				'placeholder': texto
+			});
+	}
+
+	function resetPlaceholder(input,texto){
+		$(input)
+			.attr({
+				'placeholder': texto
+			});
 	}
 
 	$("#btn_crea_usuario").click(function(){
@@ -187,62 +219,74 @@ $(function(){
 
 		//Validamos el campo nombre, simplemente miramos que no esté vacío
 		if (nombre === "") {
-			$("label#nombre_error").show();
-			$("input#nombre").focus();
+			errorInput('input#nombre');
+			showPlaceholder('input#nombre', 'Inserta el nombre');
 			return false;
 		}
 		else{
-			$('#nombre_error').hide();
+			okInput('input#nombre');
+			resetPlaceholder('input#nombre', 'Nombre');
 			nombre = nombre.substring(0,20);
 		}
 		if (apellidos === "") {
-			$("label#apellidos_error").show();
-			$("input#apellidos").focus();
+			errorInput('input#apellidos');
+			showPlaceholder('input#apellidos', 'Inserta los apellidos');
 			return false;
 		}
 		else{
-			$('#apellidos_error').hide();
+			okInput('input#apellidos');
+			resetPlaceholder('input#apellidos', 'Apellidos');
 			apellidos = apellidos.substring(0,30);
 		}
 		if (dni === "") {
-			$("label#dni_error").show();
-			$("input#dni").focus();
+			errorInput('input#dni');
+			showPlaceholder('input#dni', 'Inserta el DNI');
 			return false;
 		}
 		else{
-			$('#dni_error').hide();
+			okInput('input#dni');
+			resetPlaceholder('input#dni', 'DNI');
 			if(dni.length!==9){
-				$("label#dni_tam_error").show();
-				$("input#dni").focus();
+				errorInput('input#dni');
+				showPlaceholder('input#dni', 'DNI incorrecto');
+				$('input#dni').val('');
 				return false;
 			}
 			else{
-				$('#dni_tam_error').hide();
+				okInput('input#dni');
+				resetPlaceholder('input#dni', 'DNI');
 			}
 		}
 		if(pwd1 === ""){
-			$("label#pwd1_error").show();
-			$("input#pwd1").focus();
+			errorInput('input#pwd1');
+			showPlaceholder('input#pwd1', 'Introduce una contraseña');
 			return false;
 		}
 		else{
-			$('#pwd1_error').hide();
+			okInput('input#pwd1');
+			resetPlaceholder('input#pwd1', 'Password');
 		}
 		if(pwd2 === ""){
-			$("label#pwd2_error").show();
-			$("input#pwd2").focus();
+			errorInput('input#pwd2');
+			showPlaceholder('input#pwd2', 'Repite password');
 			return false;
 		}
 		else{
-			$('#pwd2_error').hide();
+			okInput('input#pwd2');
+			resetPlaceholder('input#pwd2', 'Repite password');
 		}
 		if(pwd1 !== pwd2){
-			$("label#pwd_error").show();
-			$("input#pwd1,input#pwd2").focus();
+			errorInput('input#pwd1');
+			errorInput('input#pwd2');
+			showPlaceholder('input#pwd1,input#pwd2', 'Las contraseñas no coinciden');
+			$('input#pwd1,input#pwd2').val('');
 			return false;
 		}
 		else{
-			$('#pwd_error').hide();
+			okInput('input#pwd1');
+			okInput('input#pwd2');
+			resetPlaceholder('input#pwd1', 'Password');
+			resetPlaceholder('input#pwd2', 'Repite password');
 		}
 		var dato = "tipo=insert_user&nombre="+nombre+"&apellidos="+apellidos+"&pass="+pwd1+"&email="+email+"&telefono="+telefono+"&dni="+dni;
 	    $.ajax({
@@ -276,13 +320,6 @@ $(function(){
 		clearInputs("#form_usuario");
 	    return false; // Evitar ejecutar el submit del formulario.
 	});
-
-	function clearInputs(selector){
-		$(selector+" :input").each(function(){
-			$(this).val('');
-		});
-		$('.error').hide();
-	}
 
 	$('#btn_crea_pass').mousedown(function() {
 		$('#pass').html(password(8));

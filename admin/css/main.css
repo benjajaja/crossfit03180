@@ -95,7 +95,7 @@ td.clase{
 	min-width:130px;
 	max-width:130px;
 }
-div#cont-eventos,table,td{
+div#cont-eventos,td{
 	border: 1px solid #ccc;
 }
 label.error{
@@ -112,9 +112,10 @@ td.titulo{
 	height: 60px;
 }
 td.datos{
-	color: #ccc;
-	font-size: 18px;
-	background-color: rgba(12, 48, 73, 50);
+	color: #000;
+	font-size: 15px;
+	font-weight:bold;
+	background-color: rgb(235, 235, 235);
 }
 td.eliminar{
 	width: 60px;
@@ -124,4 +125,9 @@ td.eliminar{
 #respuesta_usuario,#respuesta_evento{
 	color:red;
 	font-weight: bold;
+}
+#tabla_users{
+	height: 50px;
+	min-height: 50px;
+	max-height: 50px;
 }
