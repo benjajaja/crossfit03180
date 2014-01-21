@@ -11,13 +11,11 @@ $(function(){
 	var array_texto_horas = ['8','9','10','11','12','13','14','15','16','17','18','19','20','21','22'];
 	var array_dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 	var array_fecha_a_mostrar = [];
-
-	//recoge el dia y el mes actual
 	var d=new Date();
-	var diaNum = d.getDay();
-	var mesNum = d.getMonth()+1;
-	if(diaNum===0)
-		diaNum=7;
+	var diaNum = d.getDay();//de 0 a 6, donde 0 es Domingo
+	if(diaNum === 0)diaNum = 7;
+	var mesNum = d.getMonth() + 1;//de 0 a 11
+	
 
 	//crea la primera celda con el texto horario
 	var tr = $("<tr align='center'>")
@@ -29,13 +27,12 @@ $(function(){
 
 	//recorre de 1 a 7 (días de la semana) y crea una celda para cada día con el nombre del día, el número de día y mes
 	for(var i=1; i<8;i++){
-		
 		var td = $("<td>")
 					.addClass('dias')
 					.attr('id',array_dias[i-1])
 					.text(function(){
 						if(i===diaNum){//si es el dia actual
-							array_fecha_a_mostrar.push(moment().date());
+							array_fecha_a_mostrar.push(moment().date());//inserta la fecha en el array con (push)
 							return array_dias[i-1]+" "+moment().date();
 						}
 						else{//si no es el dia actual
@@ -125,27 +122,13 @@ $(function(){
 				if(j===diaNum){
 					$(td)
 						.css({
-							'background-color': 'rgba(12, 48, 73, 50)',
+							'background-color': 'rgb(48, 48, 48)',
 							'z-index': '-1'
 						});
 				}
 				tr.append(td);
 		}
 		$('#tabla').append(tr);//inserta la fila creada a la tabla
-	}
-
-	function propiedadesEventoContador(evento){
-		$(evento).css({
-			'margin-bottom': '0.5em',
-				'background-color': '#BCF5A9'
-		});
-	}
-
-	function propiedadesEventoCalendario(evento){
-		$(evento).css({
-			'margin-bottom': '0',
-			'background-color': '#f4f4f4'
-		});
 	}
 
 	//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
@@ -196,7 +179,96 @@ $(function(){
 	    	}
 	    }
 	});
-	
+
+	$("#btn_crea_evento").click(function(){
+		$('#respuesta_evento').hide();
+		clearInputs("#form_evento");
+	});
+			
+	$("#btn_inserta_evento").click(function(){
+		//Obtenemos el valor de los campos
+		var evento = $("input#evento").val();
+		var max = $("input#max_usuarios").val();
+
+		//Validamos el campo nombre, simplemente miramos que no esté vacío
+		if (evento === "") {
+			errorInput("input#evento");
+			showPlaceholder('input#evento', 'Inserta el nombre del evento');
+			return false;
+		}
+		else{
+			okInput('input#evento');
+			resetPlaceholder('input#evento', 'Nombre');
+			evento = evento.substring(0,10);
+		}
+		if(max === ""){
+			errorInput("input#max_usuarios");
+			showPlaceholder('input#max_usuarios', 'Inserta el número de usuarios');
+			return false;
+		}
+		else{
+			okInput('input#max_usuarios');
+			resetPlaceholder('input#max_usuarios', 'Límite usuarios');
+			if(!($.isNumeric(max))){
+				errorInput("input#max_usuarios");
+				showPlaceholder('input#max_usuarios', 'Inserta un número');
+				$('input#max_usuarios').val('');
+				return false;
+			}
+			else{
+				okInput('input#max_usuarios');
+				resetPlaceholder('input#max_usuarios', 'Límite usuarios');
+				max = max.substring(0,3);
+				if(parseInt(max)===0){
+					errorInput("input#max_usuarios");
+					showPlaceholder('input#max_usuarios', 'Inserta un número válido');
+					$('input#max_usuarios').val('');
+					return false;
+				}
+				else{
+					okInput('input#max_usuarios');
+					resetPlaceholder('input#max_usuarios', 'Límite usuarios');
+				}
+			}
+		}
+		var dato="tipo=insert_evento&evento="+evento+"&max_usuarios="+max;
+	    $.ajax({
+	           	type: "POST",
+	           	url: dirEventos,
+	           	data: dato, 
+	           	success: function(data){
+	               	if(data !== '[[""]]'){
+			    		var eventosBD = jQuery.parseJSON(data);
+				      	for(var i in eventosBD){
+							var evento = creaEvento(i, eventosBD);
+							propiedadesEventoContador(evento);
+				      		$("#cont-eventos").append(evento);
+				      	}
+				      	$('#respuesta_evento').show();
+	               		$("#respuesta_evento").html(eventosBD[0][3]); // Mostrar la respuestas del script PHP.
+			    	}
+	           	}
+	    });
+	    clearInputs("#form_evento");
+	    return false; // Evitar ejecutar el submit del formulario.
+	});
+
+	function propiedadesEventoContador(evento){
+		$(evento).css({
+			'margin-bottom': '0.5em',
+			'width': '152px',
+			'max-width': '152px'
+		});
+	}
+
+	function propiedadesEventoCalendario(evento){
+		$(evento).css({
+			'margin-bottom': '0',
+			'width': '137px',
+			'max-width': '137px'
+		});
+	}
+
 	function creaEvento(i, eventosBD, tipo){
 		var div = $("<div>")
 				.addClass('evento');
@@ -315,90 +387,17 @@ $(function(){
 		okInput('input');
 	}
 
-	function showPlaceholder(input,texto){
+	function showPlaceholder(input,text){
 		$(input)
 			.attr({
-				'placeholder': texto
+				'placeholder': text
 			});
 	}
 
-	function resetPlaceholder(input,texto){
+	function resetPlaceholder(input,text){
 		$(input)
 			.attr({
-				'placeholder': texto
+				'placeholder': text
 			});
 	}
-
-	$("#btn_crea_evento").click(function(){
-		$('#respuesta_evento').hide();
-		clearInputs("#form_evento");
-	});
-			
-	$("#btn_inserta_evento").click(function(){
-		//Obtenemos el valor de los campos
-		var evento = $("input#evento").val();
-		var max = $("input#max_usuarios").val();
-
-		//Validamos el campo nombre, simplemente miramos que no esté vacío
-		if (evento === "") {
-			errorInput("input#evento");
-			showPlaceholder('input#evento', 'Inserta el nombre del evento');
-			return false;
-		}
-		else{
-			okInput('input#evento');
-			resetPlaceholder('input#evento', 'Nombre');
-			evento = evento.substring(0,10);
-		}
-		if(max === ""){
-			errorInput("input#max_usuarios");
-			showPlaceholder('input#max_usuarios', 'Inserta el número de usuarios');
-			return false;
-		}
-		else{
-			okInput('input#max_usuarios');
-			resetPlaceholder('input#max_usuarios', 'Límite usuarios');
-			if(!($.isNumeric(max))){
-				errorInput("input#max_usuarios");
-				showPlaceholder('input#max_usuarios', 'Inserta un número');
-				$('input#max_usuarios').val('');
-				return false;
-			}
-			else{
-				okInput('input#max_usuarios');
-				resetPlaceholder('input#max_usuarios', 'Límite usuarios');
-				max = max.substring(0,3);
-				if(parseInt(max)===0){
-					errorInput("input#max_usuarios");
-					showPlaceholder('input#max_usuarios', 'Inserta un número válido');
-					$('input#max_usuarios').val('');
-					return false;
-				}
-				else{
-					okInput('input#max_usuarios');
-					resetPlaceholder('input#max_usuarios', 'Límite usuarios');
-				}
-			}
-		}
-		var dato="tipo=insert_evento&evento="+evento+"&max_usuarios="+max;
-	    $.ajax({
-	           	type: "POST",
-	           	url: dirEventos,
-	           	data: dato, 
-	           	success: function(data){
-	               	if(data !== '[[""]]'){
-			    		var eventosBD = jQuery.parseJSON(data);
-				      	for(var i in eventosBD){
-							var evento = creaEvento(i, eventosBD);
-							propiedadesEventoContador(evento);
-				      		$("#cont-eventos").append(evento);
-				      	}
-				      	$('#respuesta_evento').show();
-	               		$("#respuesta_evento").html(eventosBD[0][3]); // Mostrar la respuestas del script PHP.
-			    	}
-	           	}
-	    });
-	    clearInputs("#form_evento");
-	    return false; // Evitar ejecutar el submit del formulario.
-	});
 });
