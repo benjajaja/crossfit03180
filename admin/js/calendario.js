@@ -9,76 +9,103 @@ $(function(){
 
 	var array_horas = ['8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
 	var array_texto_horas = ['8','9','10','11','12','13','14','15','16','17','18','19','20','21','22'];
-	var array_dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-	var array_fecha_a_mostrar = [];
-	var d=new Date();
-	var diaNum = d.getDay();//de 0 a 6, donde 0 es Domingo
-	if(diaNum === 0)diaNum = 7;
-	var mesNum = d.getMonth() + 1;//de 0 a 11
-	
+	var array_nombre_dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+	var array_fecha = [];
 
-	//crea la primera celda con el texto horario
-	var tr = $("<tr align='center'>")
-			
+	var d=new Date();
+	
+	//recoge el dia y lo adapta de 1 a 7
+	var diaNum = d.getDay();
+	if(diaNum === 0)
+		diaNum = 7;
+
+	//recoge el mes, lo adapta de 1 a 12 y pone 0 a la izquierda si es menor a 10
+	var mesNum = d.getMonth() + 1;
+	mesNum = ceroIzquierda(mesNum);
+
+	//recoge el año
+	var anyoNum = d.getFullYear();
+
+	//recoge el ultimo dia del mes(28, 29, 30 ó 31)
+	var ultimoDiaDelMes = daysInMonth(mesNum,anyoNum);
+
+	//crea la primera celda con el texto horario y lo agrega a la celda
+	var tr = $("<tr align='center'>")	
 	var td = $("<td>")
 				.addClass('horario');
-		
 	tr.append(td);
 
-	//recorre de 1 a 7 (días de la semana) y crea una celda para cada día con el nombre del día, el número de día y mes
+	//recorre de 1 a 7 (días de la semana) y crea una celda para cada día, con el nombre del día, el número de día, mes y año
 	for(var i=1; i<8;i++){
 		var td = $("<td>")
 					.addClass('dias')
-					.attr('id',array_dias[i-1])
+					.attr('id',array_nombre_dias[i-1])
 					.text(function(){
-						if(i===diaNum){//si es el dia actual
-							array_fecha_a_mostrar.push(moment().date());//inserta la fecha en el array con (push)
-							return array_dias[i-1]+" "+moment().date();
+						//si es el dia actual
+						if(i===diaNum){
+							//pone 0 a la izquierda si el dia es menor a 10
+							var num = ceroIzquierda(moment().date());
+
+							//guarda la fecha para la query DATE e identificar la celda
+							array_fecha.push(anyoNum+"-"+mesNum+"-"+num);
+							
+							//muestra la fecha actual
+							return array_nombre_dias[i-1]+" "+num+"/"+mesNum+"/"+anyoNum;
 						}
-						else{//si no es el dia actual
+						//si no es el dia actual
+						else{
+							//si es menor al dia actual
 							if(i<diaNum){
 								var dif = diaNum-i;
-								array_fecha_a_mostrar.push(moment().subtract('day', dif).date());
-								return array_dias[i-1]+" "+moment().subtract('day', dif).date();	
+								
+								var num = ceroIzquierda(moment().subtract('day', dif).date());
+
+								array_fecha.push(anyoNum+"-"+mesNum+"-"+num);
+								
+								//muestra la fecha anterior al dia actual con moment.subtract
+								return array_nombre_dias[i-1]+" "+num+"/"+mesNum+"/"+anyoNum;
 							}
+							//si es mayor al dia actual
 							else if(i>diaNum){
 								var dif = i-diaNum;
-								array_fecha_a_mostrar.push(moment().add('day', dif).date());
-								return array_dias[i-1]+" "+moment().add('day', dif).date();
+								
+								var num = ceroIzquierda(moment().add('day', dif).date());
+
+								array_fecha.push(anyoNum+"-"+mesNum+"-"+num);
+								
+								//muestra la fecha posterior con moment.add
+								return array_nombre_dias[i-1]+" "+num+"/"+mesNum+"/"+anyoNum;
 							}
 						}
 				});
 		tr.append(td);
 	}
+
 	//agrega todas las celdas creadas a la tabla
 	$("#tabla").append(tr);
 
 	//inserta una fila por cada hora
 	for(var i=0;i<array_horas.length;i++){
-		
 		var tr = $("<tr>");
 		var td = $("<td align='center'>")
 					.addClass('hora')
 					.attr('id',array_texto_horas[i])
 					.text(array_horas[i]);
 		tr.append(td);
-		
+		//inserta una clase por cada dia
 		for(var j = 1; j < 8; j++){
 			var td = $("<td>")
 				.addClass('clase')
 				.attr({
-					'id': 'clase_'+array_fecha_a_mostrar[j-1]+'_'+array_texto_horas[i],
-					'fecha': array_fecha_a_mostrar[j-1],
+					'id': 'clase_'+array_fecha[j-1]+'_'+array_texto_horas[i],
+					'fecha': array_fecha[j-1],
 					'hora': array_texto_horas[i]
 				})
 				.droppable({
 					accept: '.evento',
 					drop: 	function(event, ui) {
-								
 								if($(this).children("div").size() === 0){
-								
-									if($(ui.draggable).parent().attr('id') === 'cont-eventos'){									
-										
+									if($(ui.draggable).parent().attr('id') === 'cont-eventos'){
 										var dato = "tipo=insert_evento_calendario&idEvento="+$(ui.draggable).attr('id_evento')+"&fecha="+$(this).attr('fecha')+"&hora="+$(this).attr('hora');								
 										$.ajax({
 										    type: "POST",
@@ -108,6 +135,7 @@ $(function(){
 										    data: dato
 										});
 									}
+									//asigna la nueva fecha y hora
 									$(ui.draggable)
 										.attr({
 											'fecha': $(this).attr('fecha'),
@@ -252,6 +280,17 @@ $(function(){
 	    clearInputs("#form_evento");
 	    return false; // Evitar ejecutar el submit del formulario.
 	});
+
+	function daysInMonth(humanMonth, year) {
+		return new Date(year || new Date().getFullYear(), humanMonth, 0).getDate();
+	}
+
+	function ceroIzquierda(num){
+		if(num <= 9){
+			num = "0"+num;
+		}
+		return num
+	}
 
 	function propiedadesEventoContador(evento){
 		$(evento).css({
