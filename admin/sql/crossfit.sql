@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 12-01-2014 a las 11:41:01
+-- Tiempo de generación: 30-01-2014 a las 19:25:40
 -- Versión del servidor: 5.1.53
 -- Versión de PHP: 5.3.4
 
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `eventos` (
 CREATE TABLE IF NOT EXISTS `evento_calendario` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_evento` int(3) NOT NULL,
-  `fecha` int(2) NOT NULL,
+  `fecha` date NOT NULL,
   `hora` int(2) NOT NULL,
   `estado` int(1) NOT NULL,
   PRIMARY KEY (`id`),
