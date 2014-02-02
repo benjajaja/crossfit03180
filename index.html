@@ -235,9 +235,19 @@ $(function () {
 		},
 
 		header: {
-		    left:   'title',
+		    //left:   'title',
 		    center: '',
 		    right:  ''
+		},
+
+		eventBackgroundColor: '#ed1b24',
+		eventTextColor: 'black',
+		eventRender: function(event, element, view) {
+			element.css({border: 'none'});
+			if (event.isEnroled) {
+				element.css({backgroundColor: '#0c0'});
+			}
+			return element;
 		},
 
 		allDaySlot: false,
@@ -258,9 +268,49 @@ $(function () {
 		//events: [{"title":"asdasd","start":"2014-01-03T14:00:00","end":"2014-01-03T15:00:00"},{"title":"213123123","start":"2014-01-05T11:00:00+01:00","end":"2014-01-05T12:00:00+01:00"},{"title":"aaaaaa","start":"2014-01-05T12:00:00+01:00","end":"2014-01-05T13:00:00+01:00"},{"title":"tesdt","start":"2014-01-06T18:00:00+01:00","end":"2014-01-06T19:00:00+01:00"}],
 		
 		eventClick: function(event) {
-			// opens events in a popup window
-			//window.open(event.url, 'gcalevent', 'width=700,height=600');
-			
+			if (event.isEnroled) {
+				if (confirm('¿Seguro que quieres CANCELAR asisitir a "' + event.title + '" el ' + event.start.toDateString() + ' a las ' + event.start.toTimeString() + '?')) {
+					var element = this;
+
+					var date = event.start.getFullYear()
+						+ '/' + ('0' + (event.start.getMonth() + 1)).slice(-2)
+						+ '/' + ('0' + event.start.getDate()).slice(-2)
+						+ '/' + ('0' + event.start.getHours()).slice(-2)
+						+ ':' + ('0' + event.start.getMinutes()).slice(-2);
+					$.ajax({
+						url: '/api/events/' + date,
+						method: 'DELETE'
+					}).done(function(response) {
+						$(element).css({backgroundColor: '#ed1b24'});
+
+					}).fail(function(response) {
+						alert(response.responseText);
+
+					})
+				}
+				return false;
+			}
+
+			if (confirm('¿Seguro que quieres asistir a "' + event.title + '" el ' + event.start.toDateString() + ' a las ' + event.start.toTimeString() + '?')) {
+				var element = this;
+
+				var date = event.start.getFullYear()
+					+ '/' + ('0' + (event.start.getMonth() + 1)).slice(-2)
+					+ '/' + ('0' + event.start.getDate()).slice(-2)
+					+ '/' + ('0' + event.start.getHours()).slice(-2)
+					+ ':' + ('0' + event.start.getMinutes()).slice(-2);
+				$.ajax({
+					url: '/api/events/' + date,
+					method: 'POST'
+				}).done(function(response) {
+					console.log(response);
+					$(element).css({backgroundColor: '#0c0'});
+
+				}).fail(function(response) {
+					alert(response.responseText);
+
+				});
+			}
 			return false;
 		},
 		
@@ -296,6 +346,28 @@ $(function () {
 	};
 	$('#loginModal form').submit(login);
 	$('#loginModal .btn-primary').click(login);
+
+	$.ajax({
+		url: '/api/auth',
+		method: 'GET'
+	}).done(function(user) {
+		var logoutButton = $('<button/>').text('Desconectar (' + user.name + ')');
+		logoutButton.click(function() {
+			$.ajax({
+				url: '/api/auth',
+				method: 'DELETE'
+			}).done(function() {
+				window.location.reload();
+			}).fail(function(response) {
+				alert(response.responseText || 'Error');
+			});
+		});
+		logoutButton.attr('class', $('#loginButton').attr('class'));
+		$('#loginButton').replaceWith(logoutButton);
+
+	}).fail(function(response) {
+		console.log(response.responseText);
+	})
 });
 </script>
 

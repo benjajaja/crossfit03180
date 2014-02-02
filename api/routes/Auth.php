@@ -22,10 +22,30 @@ class Auth {
 
 		} else {
 			$_SESSION['logged'] = true;
+			$_SESSION['user'] = $users[0];
 			$res->add('Acceso correcto'); // no importa, el jQuery solo mira el status
 			return $res->send(200, 'text'); // status: 200 Ok!
 
 		}
+	}
+
+	public function get($req, $res) {
+		if ($_SESSION['logged'] === true) {
+			$res->add(json_encode(array(
+				'name' => $_SESSION['user']['nombre']
+			))); // no importa, el jQuery solo mira el status
+			return $res->send(200, 'json'); // status: 200 Ok!
+		} else {
+			$res->add('No registrado'); // no importa, el jQuery solo mira el status
+			return $res->send(404, 'text'); // status: 200 Ok!
+		}
+		
+
+	}
+
+	public function delete($req, $res) {
+		session_destroy();
+		return $res->send(204);
 	}
 }
 

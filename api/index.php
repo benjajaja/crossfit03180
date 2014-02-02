@@ -35,9 +35,17 @@ $addRoute = function($path, $class, $methods, $handlers = null) use ($db, $route
 	$router->addRoute($route);
 };
 
-$addRoute('/auth', 'Auth', ['post', 'delete']);
+$addRoute('/auth', 'Auth', ['post', 'get', 'delete']);
 
 $addRoute('/calendar', 'Calendar', ['get']);
+
+$addRoute('/events/{year}/{month}/{day}/{hour}:{minute}', 'Events', ['post', 'delete'], array(
+	'year' => Zaphpa_Constants::PATTERN_YEAR,
+	'month' => Zaphpa_Constants::PATTERN_MONTH,
+	'day' => Zaphpa_Constants::PATTERN_DAY,
+	'hour' => Zaphpa_Constants::PATTERN_DAY,
+	'minute' => Zaphpa_Constants::PATTERN_DAY,
+));
 
 /* ej.: $addRoute(
 	'/calendar/week/{startDay}',
