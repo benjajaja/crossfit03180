@@ -4,4 +4,5 @@ config.php
 rsync
 rsync-exclude
 calendario/.htaccess
+admin/.htaccess
 php.ini

@@ -282,6 +282,7 @@ $(function () {
 						method: 'DELETE'
 					}).done(function(response) {
 						$(element).css({backgroundColor: '#ed1b24'});
+						event.isEnroled = false;
 
 					}).fail(function(response) {
 						alert(response.responseText);
@@ -305,6 +306,7 @@ $(function () {
 				}).done(function(response) {
 					console.log(response);
 					$(element).css({backgroundColor: '#0c0'});
+					event.isEnroled = true;
 
 				}).fail(function(response) {
 					alert(response.responseText);
