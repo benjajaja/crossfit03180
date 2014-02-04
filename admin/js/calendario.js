@@ -13,200 +13,269 @@ $(function(){
 	var array_fecha = [];
 
 	var d=new Date();
-	
 	//recoge el dia y lo adapta de 1 a 7
 	var diaNum = d.getDay();
 	if(diaNum === 0)
 		diaNum = 7;
-
 	//recoge el mes, lo adapta de 1 a 12 y pone 0 a la izquierda si es menor a 10
 	var mesNum = d.getMonth() + 1;
-	mesNum = ceroIzquierda(mesNum);
-
 	//recoge el año
 	var anyoNum = d.getFullYear();
 
-	//recoge el ultimo dia del mes(28, 29, 30 ó 31)
-	var ultimoDiaDelMes = daysInMonth(mesNum,anyoNum);
+	var fechaActual=anyoNum+"-"+ceroIzquierda(mesNum)+"-"+ceroIzquierda(moment().date());
 
-	//crea la primera celda con el texto horario y lo agrega a la celda
-	var tr = $("<tr align='center'>")	
-	var td = $("<td>")
-				.addClass('horario');
-	tr.append(td);
+	var incremento=0, decremento=0, moviendo=false, siguiente = false, atras=false, resta=7, cont=0;
 
-	//recorre de 1 a 7 (días de la semana) y crea una celda para cada día, con el nombre del día, el número de día, mes y año
-	for(var i=1; i<8;i++){
-		var td = $("<td>")
-					.addClass('dias')
-					.attr('id',array_nombre_dias[i-1])
-					.text(function(){
-						//si es el dia actual
-						if(i===diaNum){
-							//pone 0 a la izquierda si el dia es menor a 10
-							var num = ceroIzquierda(moment().date());
+	creaCalendario();
+	eventos();
+	eventos_calendario();
 
-							//guarda la fecha para la query DATE e identificar la celda
-							array_fecha.push(anyoNum+"-"+mesNum+"-"+num);
-							
-							//muestra la fecha actual
-							return array_nombre_dias[i-1]+" "+num+"/"+mesNum+"/"+anyoNum;
-						}
-						//si no es el dia actual
-						else{
-							//si es menor al dia actual
-							if(i<diaNum){
-								var dif = diaNum-i;
-								
-								var num = ceroIzquierda(moment().subtract('day', dif).date());
-
-								array_fecha.push(anyoNum+"-"+mesNum+"-"+num);
-								
-								//muestra la fecha anterior al dia actual con moment.subtract
-								return array_nombre_dias[i-1]+" "+num+"/"+mesNum+"/"+anyoNum;
-							}
-							//si es mayor al dia actual
-							else if(i>diaNum){
-								var dif = i-diaNum;
-								
-								var num = ceroIzquierda(moment().add('day', dif).date());
-
-								array_fecha.push(anyoNum+"-"+mesNum+"-"+num);
-								
-								//muestra la fecha posterior con moment.add
-								return array_nombre_dias[i-1]+" "+num+"/"+mesNum+"/"+anyoNum;
-							}
-						}
-				});
+	function creaCalendario(diferencia){
+		//crea la primera celda con el texto horario y lo agrega a la celda
+		var tr = $("<tr align='center'>");
+		var td = $("<td>").addClass('horario');
 		tr.append(td);
-	}
 
-	//agrega todas las celdas creadas a la tabla
-	$("#tabla").append(tr);
-
-	//inserta una fila por cada hora
-	for(var i=0;i<array_horas.length;i++){
-		var tr = $("<tr>");
-		var td = $("<td align='center'>")
-					.addClass('hora')
-					.attr('id',array_texto_horas[i])
-					.text(array_horas[i]);
-		tr.append(td);
-		//inserta una clase por cada dia
-		for(var j = 1; j < 8; j++){
+		//recorre de 1 a 7 (días de la semana) y crea una celda para cada día, con el nombre del día, el número de día, mes y año
+		for(var i=1; i<8;i++){
 			var td = $("<td>")
-				.addClass('clase')
-				.attr({
-					'id': 'clase_'+array_fecha[j-1]+'_'+array_texto_horas[i],
-					'fecha': array_fecha[j-1],
-					'hora': array_texto_horas[i]
-				})
-				.droppable({
-					accept: '.evento',
-					drop: 	function(event, ui) {
-								if($(this).children("div").size() === 0){
-									if($(ui.draggable).parent().attr('id') === 'cont-eventos'){
-										var dato = "tipo=insert_evento_calendario&idEvento="+$(ui.draggable).attr('id_evento')+"&fecha="+$(this).attr('fecha')+"&hora="+$(this).attr('hora');								
-										$.ajax({
-										    type: "POST",
-										    url: dirEventos,
-										    data: dato,
-										    success: 	function(data){
-										    				var id = jQuery.parseJSON(data);
-										    				$(ui.draggable)
-										    					.attr({
-																	'id_evento_calendario': id
-																});
-										    }
-										});
+						.addClass('dias')
+						.attr('id',array_nombre_dias[i-1])
+						.text(function(){
+							if(!moviendo){
+								//si es el dia actual
+								if(i===diaNum){
+									//guarda la fecha para la query DATE e identificar la celda
+									array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum))+"-"+ceroIzquierda(moment().date()));
+									//muestra la fecha actual
+									return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().date())+"/"+(ceroIzquierda(mesNum))+"/"+anyoNum;
+								}
+								//si no es el dia actual
+								else{
+									//si es menor al dia actual
+									if(i<diaNum){
+										var dif = (diaNum-i);
+
+										//si el dia a mostrar es mayor al dia actual
+										if(moment().subtract('day', dif).date() > moment().date()){
+											//si el mes actual es 1
+											if(mesNum===1){
+												array_fecha.push((anyoNum-1)+"-"+12+"-"+ceroIzquierda(moment().subtract('day', dif).date()));
+												//muestra la fecha anterior al dia actual con moment.subtract
+												return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().subtract('day', dif).date())+"/"+12+"/"+(anyoNum-1);
+											}
+											//si el mes actual no es 1
+											else{
+												array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum-1))+"-"+ceroIzquierda(moment().subtract('day', dif).date()));
+												//muestra la fecha anterior al dia actual con moment.subtract
+												return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().subtract('day', dif).date())+"/"+(ceroIzquierda(mesNum-1))+"/"+anyoNum;
+											}
+											
+										}
+										//si el dia a mostrar es menor al dia actual
+										else{
+											array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum))+"-"+ceroIzquierda(moment().subtract('day', dif).date()));
+											return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().subtract('day', dif).date())+"/"+(ceroIzquierda(mesNum))+"/"+anyoNum;
+										}
+									}
+									//si es mayor al dia actual
+									else if(i>diaNum){
+										var dif = i-diaNum;
+										
+										if(moment().add('day', dif).date() < moment().date()){
+											if(mesNum===12){
+												array_fecha.push((anyoNum+1)+"-"+(ceroIzquierda(1))+"-"+ceroIzquierda(moment().add('day', dif).date()));
+												//muestra la fecha anterior al dia actual con moment.subtract
+												return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().add('day', dif).date())+"/"+(ceroIzquierda(1))+"/"+(anyoNum+1);
+											}
+											else{
+												array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum+1))+"-"+ceroIzquierda(moment().add('day', dif).date()));
+												//muestra la fecha anterior al dia actual con moment.subtract
+												return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().add('day', dif).date())+"/"+(ceroIzquierda(mesNum+1))+"/"+anyoNum;
+											}
+										}
+										else{
+											array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum))+"-"+ceroIzquierda(moment().add('day', dif).date()));
+											return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().add('day', dif).date())+"/"+(ceroIzquierda(mesNum))+"/"+anyoNum;
+										}
+									}
+								}
+							}
+							else{
+								if(siguiente){
+									var dif = (incremento - diaNum)+i;
+									
+									if(moment().add('day', dif).date() < moment().add('day', dif-1).date()){
+										if(mesNum===12){
+											mesNum=1;
+											anyoNum+=1;
+										}
+										else{
+											mesNum+=1;
+										}
+									}
+									array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum))+"-"+ceroIzquierda(moment().add('day', dif).date()));
+									//muestra la fecha anterior al dia actual con moment.subtract
+									return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().add('day', dif).date())+"/"+(ceroIzquierda(mesNum))+"/"+anyoNum;	
+								}
+								//boton atras
+								/*else{
+									var dif = (decremento + diaNum)-i;
+
+									if(moment().subtract('day', dif-resta+i).date() > moment().subtract('day', dif-resta+i-1).date()){
+										if(mesNum===1){
+											mesNum=12;
+											anyoNum-=1;
+										}
+										else{
+											mesNum-=1;
+										}
+									}
+									else{
+										cont++;
+									}
+									resta--;
+
+									array_fecha.push(anyoNum+"-"+ceroIzquierda(mesNum)+"-"+ceroIzquierda(moment().subtract('day', dif).date()));
+									//muestra la fecha anterior al dia actual con moment.subtract
+									return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().subtract('day', dif).date())+"/"+ceroIzquierda(mesNum)+"/"+anyoNum;
+								}*/
+							}
+					});
+			tr.append(td);
+		}
+
+		//agrega todas las celdas creadas a la tabla
+		$("#tabla").append(tr);
+
+		//inserta una fila por cada hora
+		for(var i=0;i<array_horas.length;i++){
+			var tr = $("<tr>");
+			var td = $("<td align='center'>")
+						.addClass('hora')
+						.attr('id',array_texto_horas[i])
+						.text(array_horas[i]);
+			tr.append(td);
+			//inserta una clase por cada dia
+			for(var j = 1; j < 8; j++){
+				var td = $("<td>")
+					.addClass('clase')
+					.attr({
+						'id': 'clase_'+array_fecha[j-1]+'_'+array_texto_horas[i],
+						'fecha': array_fecha[j-1],
+						'hora': array_texto_horas[i]
+					})
+					.droppable({
+						accept: '.evento',
+						drop: 	function(event, ui) {
+									if($(this).children("div").size() === 0){//si no hay ningún evento dropeado
+										if($(ui.draggable).parent().attr('id') === 'cont-eventos'){//si el padre es el div cont-eventos
+											var dato = "tipo=insert_evento_calendario&idEvento="+$(ui.draggable).attr('id_evento')+"&fecha="+$(this).attr('fecha')+"&hora="+$(this).attr('hora');								
+											$.ajax({
+											    type: "POST",
+											    url: dirEventos,
+											    data: dato,
+											    success: 	function(data){
+											    				var id = jQuery.parseJSON(data);
+											    				$(ui.draggable)
+											    					.attr({
+																		'id_evento_calendario': id
+																	});
+											    }
+											});
+											//asigna la nueva fecha y hora
+											$(ui.draggable)
+												.attr({
+													'fecha': $(this).attr('fecha'),
+													'hora': $(this).attr('hora')
+											});
+										}
+										else{
+											
+											var dato = "tipo=update_evento_calendario&idEvento="+$(ui.draggable).attr('id_evento')+"&fecha_post="+$(this).attr('fecha')+"&hora_post="+$(this).attr('hora')+"&fecha_ant="+$(ui.draggable).attr('fecha')+"&hora_ant="+$(ui.draggable).attr('hora');
+											$.ajax({
+											    type: "POST",
+											    url: dirEventos,
+											    data: dato
+											});
+										}
 										//asigna la nueva fecha y hora
 										$(ui.draggable)
 											.attr({
 												'fecha': $(this).attr('fecha'),
 												'hora': $(this).attr('hora')
 										});
+										propiedadesEventoCalendario(ui.draggable);
+										$(this).append(ui.draggable);
 									}
-									else{
-										
-										var dato = "tipo=update_evento_calendario&idEvento="+$(ui.draggable).attr('id_evento')+"&fecha_post="+$(this).attr('fecha')+"&hora_post="+$(this).attr('hora')+"&fecha_ant="+$(ui.draggable).attr('fecha')+"&hora_ant="+$(ui.draggable).attr('hora');
-										$.ajax({
-										    type: "POST",
-										    url: dirEventos,
-										    data: dato
-										});
-									}
-									//asigna la nueva fecha y hora
-									$(ui.draggable)
-										.attr({
-											'fecha': $(this).attr('fecha'),
-											'hora': $(this).attr('hora')
-									});
-									propiedadesEventoCalendario(ui.draggable);
-									$(this).append(ui.draggable);
 								}
-							}
-				});
-				//resalta los horarios del día actual
-				if(j===diaNum){
-					$(td)
+					});
+					//resalta los horarios del día actual
+					if(fechaActual === array_fecha[j-1]){
+						$(td)
 						.css({
 							'background-color': 'rgb(48, 48, 48)',
 							'z-index': '-1'
 						});
-				}
-				tr.append(td);
+					}
+					tr.append(td);
+			}
+			$("#tabla").append(tr);//inserta la fila creada a la tabla
 		}
-		$('#tabla').append(tr);//inserta la fila creada a la tabla
 	}
 
-	//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
-	//eventosBD[i][0] = id,
-	//eventosBD[i][1] = nombre,
-	//eventosBD[i][2] = max_usuarios
-	$.ajax({
-		type: "POST",
-		url: dirEventos,
-		data: "tipo=select_eventos",
-		success: function(data){
-		   	if(data !== '0'){
-		    	var eventosBD = jQuery.parseJSON(data);
-			    for(var i in eventosBD){
-					var evento = creaEvento(i, eventosBD);
-					propiedadesEventoContador(evento);
-			      	$("#cont-eventos").append(evento);
+	function eventos(){
+		//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
+		//eventosBD[i][0] = id,
+		//eventosBD[i][1] = nombre,
+		//eventosBD[i][2] = max_usuarios
+		$.ajax({
+			type: "POST",
+			url: dirEventos,
+			data: "tipo=select_eventos",
+			success: function(data){
+			   	if(data !== '0'){
+			    	var eventosBD = jQuery.parseJSON(data);
+				    for(var i in eventosBD){
+						var evento = creaEvento(i, eventosBD);
+						propiedadesEventoContador(evento);
+				      	$("#cont-eventos").append(evento);
+				    }
 			    }
-		    }
-		}
-	});
+			}
+		});
+	}
 
-	//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
-	//eventosBD[i][0] = id,
-	//eventosBD[i][1] = nombre,
-	//eventosBD[i][2] = max_usuarios,
-	//eventosBD[i][3] = id(evento_calendario),
-	//eventosBD[i][4] = fecha,
-	//eventosBD[i][5] = hora,
-	//eventosBD[i][6] = estado
-	$.ajax({
-	    type: "POST",
-	    url: dirEventos,
-	    data: "tipo=select_eventos_calendario",
-	    success: function(data){
-	    	if(data !== '0'){
-	    		var eventosBD = jQuery.parseJSON(data);
-		      	for(var i in eventosBD){
-					var evento = creaEvento(i, eventosBD, "evento_calendario");
-					$(evento)
-						.attr({
-							'fecha': eventosBD[i][4],
-							'hora': eventosBD[i][5]
-						});
-					propiedadesEventoCalendario(evento);
-		      		$("#clase_"+eventosBD[i][4]+"_"+eventosBD[i][5]).append(evento);
-		      	}
-	    	}
-	    }
-	});
+	function eventos_calendario(){
+		//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
+		//eventosBD[i][0] = id,
+		//eventosBD[i][1] = nombre,
+		//eventosBD[i][2] = max_usuarios,
+		//eventosBD[i][3] = id(evento_calendario),
+		//eventosBD[i][4] = fecha,
+		//eventosBD[i][5] = hora,
+		//eventosBD[i][6] = estado
+		$.ajax({
+		    type: "POST",
+		    url: dirEventos,
+		    data: "tipo=select_eventos_calendario",
+		    success: function(data){
+		    	if(data !== '0'){
+		    		var eventosBD = jQuery.parseJSON(data);
+			      	for(var i in eventosBD){
+						var evento = creaEvento(i, eventosBD, "evento_calendario");
+						$(evento)
+							.attr({
+								'fecha': eventosBD[i][4],
+								'hora': eventosBD[i][5]
+							});
+						propiedadesEventoCalendario(evento);
+			      		$("#clase_"+eventosBD[i][4]+"_"+eventosBD[i][5]).append(evento);
+			      	}
+		    	}
+		    }
+		});
+	}
 
 	$("#btn_crea_evento").click(function(){
 		$('#respuesta_evento').hide();
@@ -281,12 +350,50 @@ $(function(){
 	    return false; // Evitar ejecutar el submit del formulario.
 	});
 
+	/*$("#btn_atras").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		decremento+=7;
+		resta=7;
+		cont=0;
+		incremento = 0;
+		moviendo=true;
+		siguiente=false;
+		atras=true;
+		creaCalendario();
+		eventos_calendario();
+	});*/
+
+	$("#btn_actual").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		moviendo=false;
+		incremento=0;
+		decremento=0;
+		mesNum = d.getMonth() + 1;
+		anyoNum = d.getFullYear();
+		creaCalendario();
+		eventos_calendario();
+	});
+
+	$("#btn_siguiente").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		incremento+=7;
+		decremento=0;
+		moviendo=true;
+		siguiente=true;
+		atras=false;
+		creaCalendario();
+		eventos_calendario();
+	});
+
 	function daysInMonth(humanMonth, year) {
 		return new Date(year || new Date().getFullYear(), humanMonth, 0).getDate();
 	}
 
 	function ceroIzquierda(num){
-		if(num <= 9){
+		if(num < 10){
 			num = "0"+num;
 		}
 		return num

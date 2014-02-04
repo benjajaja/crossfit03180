@@ -60,9 +60,17 @@ div.barra_admin div.texto div.max_usuarios{
 table{
 	position: absolute;
 	left: 13em;
-	top: 1em;
+	top: 3.5em;
 	float: left;
 	background-color:#000!important;
+}
+div.gestion_fechas{
+	position: absolute;
+	left: 13em;
+	display: inline;
+}
+div.gestion_fechas .btn_gestion{
+	width: 5em;
 }
 td.horario{
 	width: 60px;
