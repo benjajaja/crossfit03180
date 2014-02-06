@@ -15,6 +15,7 @@ $(function(){
 	var d=new Date();
 	//recoge el dia y lo adapta de 1 a 7
 	var diaNum = d.getDay();
+
 	if(diaNum === 0)
 		diaNum = 7;
 	//recoge el mes, lo adapta de 1 a 12 y pone 0 a la izquierda si es menor a 10
@@ -24,7 +25,7 @@ $(function(){
 
 	var fechaActual=anyoNum+"-"+ceroIzquierda(mesNum)+"-"+ceroIzquierda(moment().date());
 
-	var incremento=0, decremento=0, moviendo=false, siguiente = false, atras=false, resta=7, cont=0;
+	var incremento = 0, moviendo = false, siguiente = false;
 
 	creaCalendario();
 	eventos();
@@ -43,103 +44,60 @@ $(function(){
 						.attr('id',array_nombre_dias[i-1])
 						.text(function(){
 							if(!moviendo){
-								//si es el dia actual
 								if(i===diaNum){
 									//guarda la fecha para la query DATE e identificar la celda
-									array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum))+"-"+ceroIzquierda(moment().date()));
+									array_fecha.push(moment().format('YYYY-MM-DD'));
 									//muestra la fecha actual
-									return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().date())+"/"+(ceroIzquierda(mesNum))+"/"+anyoNum;
+									return array_nombre_dias[i-1]+" "+moment().format('DD/MM/YYYY');
 								}
 								//si no es el dia actual
 								else{
 									//si es menor al dia actual
 									if(i<diaNum){
 										var dif = (diaNum-i);
-
-										//si el dia a mostrar es mayor al dia actual
-										if(moment().subtract('day', dif).date() > moment().date()){
-											//si el mes actual es 1
-											if(mesNum===1){
-												array_fecha.push((anyoNum-1)+"-"+12+"-"+ceroIzquierda(moment().subtract('day', dif).date()));
-												//muestra la fecha anterior al dia actual con moment.subtract
-												return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().subtract('day', dif).date())+"/"+12+"/"+(anyoNum-1);
-											}
-											//si el mes actual no es 1
-											else{
-												array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum-1))+"-"+ceroIzquierda(moment().subtract('day', dif).date()));
-												//muestra la fecha anterior al dia actual con moment.subtract
-												return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().subtract('day', dif).date())+"/"+(ceroIzquierda(mesNum-1))+"/"+anyoNum;
-											}
-											
-										}
-										//si el dia a mostrar es menor al dia actual
-										else{
-											array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum))+"-"+ceroIzquierda(moment().subtract('day', dif).date()));
-											return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().subtract('day', dif).date())+"/"+(ceroIzquierda(mesNum))+"/"+anyoNum;
-										}
+										array_fecha.push(moment().subtract('days', dif).format('YYYY-MM-DD'));
+										return array_nombre_dias[i-1]+" "+moment().subtract('days', dif).format('DD/MM/YYYY');
 									}
 									//si es mayor al dia actual
 									else if(i>diaNum){
 										var dif = i-diaNum;
-										
-										if(moment().add('day', dif).date() < moment().date()){
-											if(mesNum===12){
-												array_fecha.push((anyoNum+1)+"-"+(ceroIzquierda(1))+"-"+ceroIzquierda(moment().add('day', dif).date()));
-												//muestra la fecha anterior al dia actual con moment.subtract
-												return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().add('day', dif).date())+"/"+(ceroIzquierda(1))+"/"+(anyoNum+1);
-											}
-											else{
-												array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum+1))+"-"+ceroIzquierda(moment().add('day', dif).date()));
-												//muestra la fecha anterior al dia actual con moment.subtract
-												return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().add('day', dif).date())+"/"+(ceroIzquierda(mesNum+1))+"/"+anyoNum;
-											}
-										}
-										else{
-											array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum))+"-"+ceroIzquierda(moment().add('day', dif).date()));
-											return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().add('day', dif).date())+"/"+(ceroIzquierda(mesNum))+"/"+anyoNum;
-										}
+										array_fecha.push(moment().add('day', dif).format('YYYY-MM-DD'));
+										return array_nombre_dias[i-1]+" "+moment().add('day', dif).format('DD/MM/YYYY');
 									}
 								}
 							}
 							else{
+								//semana siguiente
 								if(siguiente){
-									var dif = (incremento - diaNum)+i;
-									
-									if(moment().add('day', dif).date() < moment().add('day', dif-1).date()){
-										if(mesNum===12){
-											mesNum=1;
-											anyoNum+=1;
-										}
-										else{
-											mesNum+=1;
-										}
-									}
-									array_fecha.push(anyoNum+"-"+(ceroIzquierda(mesNum))+"-"+ceroIzquierda(moment().add('day', dif).date()));
-									//muestra la fecha anterior al dia actual con moment.subtract
-									return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().add('day', dif).date())+"/"+(ceroIzquierda(mesNum))+"/"+anyoNum;	
-								}
-								//boton atras
-								/*else{
-									var dif = (decremento + diaNum)-i;
-
-									if(moment().subtract('day', dif-resta+i).date() > moment().subtract('day', dif-resta+i-1).date()){
-										if(mesNum===1){
-											mesNum=12;
-											anyoNum-=1;
-										}
-										else{
-											mesNum-=1;
-										}
+									if(incremento<0){
+										incremento*=(-1);
+										var dif = (incremento + diaNum)-i;
+										incremento*=(-1);
+										array_fecha.push(moment().subtract('days', dif).format('YYYY-MM-DD'));
+										return array_nombre_dias[i-1]+" "+moment().subtract('days', dif).format('DD/MM/YYYY');
 									}
 									else{
-										cont++;
+										var dif = (incremento - diaNum)+i;
+										array_fecha.push(moment().add('days', dif).format('YYYY-MM-DD'));
+										return array_nombre_dias[i-1]+" "+moment().add('days', dif).format('DD/MM/YYYY');
 									}
-									resta--;
-
-									array_fecha.push(anyoNum+"-"+ceroIzquierda(mesNum)+"-"+ceroIzquierda(moment().subtract('day', dif).date()));
-									//muestra la fecha anterior al dia actual con moment.subtract
-									return array_nombre_dias[i-1]+" "+ceroIzquierda(moment().subtract('day', dif).date())+"/"+ceroIzquierda(mesNum)+"/"+anyoNum;
-								}*/
+										
+								}
+								//semana anterior
+								else{
+									if(incremento<0){
+										incremento*=(-1);
+										var dif = (incremento + diaNum)-i;
+										incremento*=(-1);
+										array_fecha.push(moment().subtract('days', dif).format('YYYY-MM-DD'));
+										return array_nombre_dias[i-1]+" "+moment().subtract('days', dif).format('DD/MM/YYYY');
+									}
+									else{
+										var dif = (incremento - diaNum)+i;
+										array_fecha.push(moment().add('days', dif).format('YYYY-MM-DD'));
+										return array_nombre_dias[i-1]+" "+moment().add('days', dif).format('DD/MM/YYYY');
+									}
+								}
 							}
 					});
 			tr.append(td);
@@ -223,6 +181,42 @@ $(function(){
 			$("#tabla").append(tr);//inserta la fila creada a la tabla
 		}
 	}
+
+	$("#btn_siguiente").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		moviendo=true;
+		incremento+=7;
+
+		siguiente=true;
+
+		creaCalendario();
+		eventos_calendario();
+	});
+
+	$("#btn_atras").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		moviendo=true;
+		incremento-=7;
+
+		siguiente=false;
+
+		creaCalendario();
+		eventos_calendario();
+	});
+
+	$("#btn_actual").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		moviendo=false;
+		incremento=0;
+		decremento=0;
+		numIncr=0;
+		numIncr=0;
+		creaCalendario();
+		eventos_calendario();
+	});
 
 	function eventos(){
 		//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
@@ -348,44 +342,6 @@ $(function(){
 	    });
 	    clearInputs("#form_evento");
 	    return false; // Evitar ejecutar el submit del formulario.
-	});
-
-	/*$("#btn_atras").click(function(){
-		$("#tabla tr").remove();
-		array_fecha.length=0;
-		decremento+=7;
-		resta=7;
-		cont=0;
-		incremento = 0;
-		moviendo=true;
-		siguiente=false;
-		atras=true;
-		creaCalendario();
-		eventos_calendario();
-	});*/
-
-	$("#btn_actual").click(function(){
-		$("#tabla tr").remove();
-		array_fecha.length=0;
-		moviendo=false;
-		incremento=0;
-		decremento=0;
-		mesNum = d.getMonth() + 1;
-		anyoNum = d.getFullYear();
-		creaCalendario();
-		eventos_calendario();
-	});
-
-	$("#btn_siguiente").click(function(){
-		$("#tabla tr").remove();
-		array_fecha.length=0;
-		incremento+=7;
-		decremento=0;
-		moviendo=true;
-		siguiente=true;
-		atras=false;
-		creaCalendario();
-		eventos_calendario();
 	});
 
 	function daysInMonth(humanMonth, year) {
