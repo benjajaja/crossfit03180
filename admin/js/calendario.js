@@ -81,7 +81,6 @@ $(function(){
 										array_fecha.push(moment().add('days', dif).format('YYYY-MM-DD'));
 										return array_nombre_dias[i-1]+" "+moment().add('days', dif).format('DD/MM/YYYY');
 									}
-										
 								}
 								//semana anterior
 								else{
@@ -249,10 +248,12 @@ $(function(){
 		//eventosBD[i][4] = fecha,
 		//eventosBD[i][5] = hora,
 		//eventosBD[i][6] = estado
+		//eventosBD[i][7] = apuntados
+		var dato = "tipo=select_eventos_calendario&fecha_inicio="+array_fecha[0]+"&fecha_fin="+array_fecha[6];
 		$.ajax({
 		    type: "POST",
 		    url: dirEventos,
-		    data: "tipo=select_eventos_calendario",
+		    data: dato,
 		    success: function(data){
 		    	if(data !== '0'){
 		    		var eventosBD = jQuery.parseJSON(data);
@@ -461,9 +462,12 @@ $(function(){
 							.addClass('texto')
 							.text(eventosBD[i][1]);
 		div.append(div_texto);
+		if(typeof(eventosBD[i][7])==='undefined'){
+			eventosBD[i][7]='0';
+		}
 		var div_max_usuarios = $('<div>')
 								.addClass('max_usuarios')
-								.text("[Rs "+eventosBD[i][2]+"]");
+								.text("[Rs "+eventosBD[i][2]+"/"+eventosBD[i][7]+"]");
 		div.append(div_max_usuarios);
 		return div;
 	}
