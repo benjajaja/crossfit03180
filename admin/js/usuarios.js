@@ -151,21 +151,24 @@ $(function(){
 	           		$('#respuesta_usuario').show();
 	           		var usersBD = jQuery.parseJSON(data);
 	           		if(usersBD === 0){
-	           			$("#respuesta_usuario").html("Charly, ese DNI ya existe.")
-	           			.css({
-		               		'color': 'red'
+	           			$("#respuesta_usuario")
+		           			.html("Charly, ese DNI ya existe.")
+		           			.css({
+			               		'color': 'red'
 		               	});
 	           		}
 	           		else if(usersBD === 1){
-	           			$("#respuesta_usuario").html("Charly, algo ha fallado al insertar el usuario...")
-	           			.css({
-		               		'color': 'red'
+	           			$("#respuesta_usuario")
+		           			.html("Charly, algo ha fallado al insertar el usuario...")
+		           			.css({
+			               		'color': 'red'
 		               	});
 	           		}
 	           		else if(usersBD !== 0 && usersBD !== 1){
-		               	$("#respuesta_usuario").html(usersBD[0][7])
-		               	.css({
-		               		'color': 'blue'
+		               	$("#respuesta_usuario")
+			               	.html(usersBD[0][7])
+			               	.css({
+			               		'color': 'blue'
 		               	}); 
 		               	actualizaUsers(usersBD);
 		            }

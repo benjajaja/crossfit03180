@@ -20,6 +20,10 @@
 		$id = addslashes(htmlspecialchars($_POST["id"]));
 		delete_user($id);
 	}
+	else if($tipo==="get_users"){
+		$id_evento = addslashes(htmlspecialchars($_POST["id_evento"]));
+		get_users($id_evento);
+	}
 
 	/**********************
 	***********************
@@ -33,7 +37,7 @@
 
 		if(!$row = mysql_fetch_array($sql)){//si no existe el dni
 			$pass = $GLOBALS['config']['db']['salt'] . $pass;
-			echo "^".$GLOBALS['config']['db']['salt'] . "<".$pass.">";
+			//echo "^".$GLOBALS['config']['db']['salt'] . "<".$pass.">";
 			$sql = mysql_query("INSERT INTO usuarios (nombre,apellidos,pass,email,telefono,dni) 
 						VALUES ('$nombre','$apellidos',UNHEX(SHA1('$pass')),'$email','$telefono','$dni')");
 			if(!$sql){
@@ -77,6 +81,26 @@
 			$array[$i][4]=$file['email'];
 			$array[$i][5]=$file['telefono'];
 			$array[$i][6]=$file['dni'];
+			$i++;
+		}
+		$result = json_encode($array);
+		
+		if($result === '[[""]]'){
+			echo "0";
+		}
+		else{
+			echo $result;
+		}
+	}
+
+	function get_users($id_evento){
+		$sql=mysql_query("SELECT usuarios.nombre, usuarios.apellidos FROM usuarios, usuario_evento WHERE usuario_evento.id_evento='$id_evento' AND usuario_evento.id_usuario=usuarios.id");
+
+		$array[][]="";
+		$i=0;
+		while($file=mysql_fetch_array($sql)){
+			$array[$i][0]=$file['nombre'];
+			$array[$i][1]=$file['apellidos'];
 			$i++;
 		}
 		$result = json_encode($array);

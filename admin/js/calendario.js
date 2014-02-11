@@ -1,6 +1,7 @@
 $(function(){
 
 	var dirEventos = "php/eventos.php";
+	var dirUsuarios = "php/usuarios.php";
 
 	//impide que se pueda seleccionar texto en el lugar indicado
 	$('#tabla, #cont-eventos').attr('unselectable', 'on');
@@ -30,6 +31,115 @@ $(function(){
 	creaCalendario();
 	eventos();
 	eventos_calendario();
+
+	$("#btn_siguiente").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		moviendo=true;
+		incremento+=7;
+
+		siguiente=true;
+
+		creaCalendario();
+		eventos_calendario();
+	});
+
+	$("#btn_atras").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		moviendo=true;
+		incremento-=7;
+
+		siguiente=false;
+
+		creaCalendario();
+		eventos_calendario();
+	});
+
+	$("#btn_actual").click(function(){
+		$("#tabla tr").remove();
+		array_fecha.length=0;
+		moviendo=false;
+		incremento=0;
+		decremento=0;
+		numIncr=0;
+		numIncr=0;
+		creaCalendario();
+		eventos_calendario();
+	});
+
+	$("#btn_crea_evento").click(function(){
+		$('#respuesta_evento').hide();
+		clearInputs("#form_evento");
+	});
+			
+	$("#btn_inserta_evento").click(function(){
+		//Obtenemos el valor de los campos
+		var evento = $("input#evento").val();
+		var max = $("input#max_usuarios").val();
+
+		//Validamos el campo nombre, simplemente miramos que no esté vacío
+		if (evento === "") {
+			errorInput("input#evento");
+			showPlaceholder('input#evento', 'Inserta el nombre del evento');
+			return false;
+		}
+		else{
+			okInput('input#evento');
+			resetPlaceholder('input#evento', 'Nombre');
+			evento = evento.substring(0,10);
+		}
+		if(max === ""){
+			errorInput("input#max_usuarios");
+			showPlaceholder('input#max_usuarios', 'Inserta el número de usuarios');
+			return false;
+		}
+		else{
+			okInput('input#max_usuarios');
+			resetPlaceholder('input#max_usuarios', 'Límite usuarios');
+			if(!($.isNumeric(max))){
+				errorInput("input#max_usuarios");
+				showPlaceholder('input#max_usuarios', 'Inserta un número');
+				$('input#max_usuarios').val('');
+				return false;
+			}
+			else{
+				okInput('input#max_usuarios');
+				resetPlaceholder('input#max_usuarios', 'Límite usuarios');
+				max = max.substring(0,3);
+				if(parseInt(max)===0){
+					errorInput("input#max_usuarios");
+					showPlaceholder('input#max_usuarios', 'Inserta un número válido');
+					$('input#max_usuarios').val('');
+					return false;
+				}
+				else{
+					okInput('input#max_usuarios');
+					resetPlaceholder('input#max_usuarios', 'Límite usuarios');
+				}
+			}
+		}
+		var dato="tipo=insert_evento&evento="+evento+"&max_usuarios="+max;
+	    $.ajax({
+	           	type: "POST",
+	           	url: dirEventos,
+	           	data: dato, 
+	           	success: function(data){
+	               	if(data !== '[[""]]'){
+			    		var eventosBD = jQuery.parseJSON(data);
+				      	for(var i in eventosBD){
+							var evento = creaEvento(i, eventosBD);
+							propiedadesEventoContador(evento);
+				      		$("#cont-eventos").append(evento);
+				      	}
+				      	$('#respuesta_evento').show();
+	               		$("#respuesta_evento").html(eventosBD[0][3]); // Mostrar la respuestas del script PHP.
+			    	}
+	           	}
+	    });
+	    clearInputs("#form_evento");
+	    return false; // Evitar ejecutar el submit del formulario.
+	});
 
 	function creaCalendario(diferencia){
 		//crea la primera celda con el texto horario y lo agrega a la celda
@@ -181,42 +291,6 @@ $(function(){
 		}
 	}
 
-	$("#btn_siguiente").click(function(){
-		$("#tabla tr").remove();
-		array_fecha.length=0;
-		moviendo=true;
-		incremento+=7;
-
-		siguiente=true;
-
-		creaCalendario();
-		eventos_calendario();
-	});
-
-	$("#btn_atras").click(function(){
-		$("#tabla tr").remove();
-		array_fecha.length=0;
-		moviendo=true;
-		incremento-=7;
-
-		siguiente=false;
-
-		creaCalendario();
-		eventos_calendario();
-	});
-
-	$("#btn_actual").click(function(){
-		$("#tabla tr").remove();
-		array_fecha.length=0;
-		moviendo=false;
-		incremento=0;
-		decremento=0;
-		numIncr=0;
-		numIncr=0;
-		creaCalendario();
-		eventos_calendario();
-	});
-
 	function eventos(){
 		//eventosBD es un array bidimensional el cual devuelve las siguientes posiciones
 		//eventosBD[i][0] = id,
@@ -272,79 +346,6 @@ $(function(){
 		});
 	}
 
-	$("#btn_crea_evento").click(function(){
-		$('#respuesta_evento').hide();
-		clearInputs("#form_evento");
-	});
-			
-	$("#btn_inserta_evento").click(function(){
-		//Obtenemos el valor de los campos
-		var evento = $("input#evento").val();
-		var max = $("input#max_usuarios").val();
-
-		//Validamos el campo nombre, simplemente miramos que no esté vacío
-		if (evento === "") {
-			errorInput("input#evento");
-			showPlaceholder('input#evento', 'Inserta el nombre del evento');
-			return false;
-		}
-		else{
-			okInput('input#evento');
-			resetPlaceholder('input#evento', 'Nombre');
-			evento = evento.substring(0,10);
-		}
-		if(max === ""){
-			errorInput("input#max_usuarios");
-			showPlaceholder('input#max_usuarios', 'Inserta el número de usuarios');
-			return false;
-		}
-		else{
-			okInput('input#max_usuarios');
-			resetPlaceholder('input#max_usuarios', 'Límite usuarios');
-			if(!($.isNumeric(max))){
-				errorInput("input#max_usuarios");
-				showPlaceholder('input#max_usuarios', 'Inserta un número');
-				$('input#max_usuarios').val('');
-				return false;
-			}
-			else{
-				okInput('input#max_usuarios');
-				resetPlaceholder('input#max_usuarios', 'Límite usuarios');
-				max = max.substring(0,3);
-				if(parseInt(max)===0){
-					errorInput("input#max_usuarios");
-					showPlaceholder('input#max_usuarios', 'Inserta un número válido');
-					$('input#max_usuarios').val('');
-					return false;
-				}
-				else{
-					okInput('input#max_usuarios');
-					resetPlaceholder('input#max_usuarios', 'Límite usuarios');
-				}
-			}
-		}
-		var dato="tipo=insert_evento&evento="+evento+"&max_usuarios="+max;
-	    $.ajax({
-	           	type: "POST",
-	           	url: dirEventos,
-	           	data: dato, 
-	           	success: function(data){
-	               	if(data !== '[[""]]'){
-			    		var eventosBD = jQuery.parseJSON(data);
-				      	for(var i in eventosBD){
-							var evento = creaEvento(i, eventosBD);
-							propiedadesEventoContador(evento);
-				      		$("#cont-eventos").append(evento);
-				      	}
-				      	$('#respuesta_evento').show();
-	               		$("#respuesta_evento").html(eventosBD[0][3]); // Mostrar la respuestas del script PHP.
-			    	}
-	           	}
-	    });
-	    clearInputs("#form_evento");
-	    return false; // Evitar ejecutar el submit del formulario.
-	});
-
 	function daysInMonth(humanMonth, year) {
 		return new Date(year || new Date().getFullYear(), humanMonth, 0).getDate();
 	}
@@ -374,15 +375,13 @@ $(function(){
 
 	function creaEvento(i, eventosBD, tipo){
 		var div = $("<div>")
-				.addClass('evento');
-		$(div)
+			.addClass('evento')
 			.attr({
 				'id': 'evento',
 				'id_evento_calendario': eventosBD[i][3],
 				'id_evento': eventosBD[i][0],
 				'maxUsuarios': eventosBD[i][2]
-			});
-		$(div)
+			})
 			.mouseover(function() {
 				div_barra_admin
 					.css({
@@ -460,18 +459,44 @@ $(function(){
 		div.append(div_barra_admin);
 		var div_texto = $('<div>')
 							.addClass('texto')
-							.text(eventosBD[i][1]);
+							.text(eventosBD[i][1])
+							.click(function(){
+								getUsers(eventosBD[i][0]);
+							});
 		div.append(div_texto);
 		if(typeof(eventosBD[i][7])==='undefined'){
 			eventosBD[i][7]='0';
 		}
 		var div_max_usuarios = $('<div>')
 								.addClass('max_usuarios')
-								.text("[Rs "+eventosBD[i][2]+"/"+eventosBD[i][7]+"]");
+								.text("[Rs "+eventosBD[i][2]+"/"+eventosBD[i][7]+"]")
+								.click(function(){
+									getUsers(eventosBD[i][0]);
+								});
 		div.append(div_max_usuarios);
 		return div;
 	}
 	
+	function getUsers(id_evento){
+		var dato="tipo=get_users&id_evento="+id_evento;
+	    $.ajax({
+	           	type: "POST",
+	           	url: dirUsuarios,
+	           	data: dato, 
+	           	success: function(data){
+	               	if(data !== '[[""]]'){
+			    		var usersEvento = jQuery.parseJSON(data);
+				      	var users="";
+				      	for(var i in usersEvento){
+				      		users+="- "+usersEvento[i][0]+" "+usersEvento[i][1]+"\n";
+				      	}
+				      	if(users!=="")
+				      		alert(users);
+			    	}
+	           	}
+	    });
+	}
+
 	function errorInput(input){
 		$(input).focus().css({
 				'background-color': 'rgb(242, 222, 222)',
