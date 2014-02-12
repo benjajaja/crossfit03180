@@ -24,12 +24,13 @@ class Calendar {
 				'end' => $end,
 				'isEnroled' => $_SESSION['user']['id'] && $_SESSION['user']['id'] == $item['id_usuario'],
 				'userCount' => (int) $item['usercount'],
-				'isFull' => $item['max_usuario'] >= $item['usercount']
+				'maxUsers' => (int) $item['max_usuarios'],
+				'isFull' => $item['usercount'] >= $item['max_usuarios']
 			);
-		}, $GLOBALS['db']->GetAll('SELECT * FROM evento_calendario
+		}, $GLOBALS['db']->GetAll('SELECT *, (SELECT COUNT(id_evento) FROM usuario_evento WHERE usuario_evento.id_evento = eventos.id) AS usercount 
+			FROM evento_calendario
 			LEFT JOIN eventos ON eventos.id = evento_calendario.id_evento
 			LEFT JOIN usuario_evento ON usuario_evento.id_evento = evento_calendario.id_evento AND usuario_evento.id_usuario = ?
-			LEFT JOIN (SELECT id_evento, COUNT(id_evento) AS usercount FROM usuario_evento) AS uc ON uc.id_evento = eventos.id
 			WHERE fecha BETWEEN FROM_UNIXTIME(?) AND FROM_UNIXTIME(?)',
 			[$_SESSION['user']['id'], $_GET['start'], $_GET['end']]));
 
@@ -37,7 +38,6 @@ class Calendar {
 			$events = [];
 			$events = $GLOBALS['db']->ErrorMsg();
 		}
-
 		$res->add(json_encode($events));
 
 		$res->send(200, 'json');
