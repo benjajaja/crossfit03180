@@ -246,6 +246,11 @@ $(function () {
 			element.css({border: 'none'});
 			if (event.isEnroled) {
 				element.css({backgroundColor: '#0c0'});
+			} else if (event.isFull) {
+				element.css({
+					backgroundColor: '#333',
+					color: 'white'
+				});
 			}
 			return element;
 		},
@@ -290,6 +295,8 @@ $(function () {
 					})
 				}
 				return false;
+			} else if (event.isFull) {
+				return alert('Lo sentimos, ya no quedan plazas para esta actividad.');
 			}
 
 			if (confirm('¿Seguro que quieres asistir a "' + event.title + '" el ' + event.start.toDateString() + ' a las ' + event.start.toTimeString() + '?')) {
