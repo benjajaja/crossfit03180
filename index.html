@@ -252,6 +252,14 @@ $(function () {
 					color: 'white'
 				});
 			}
+			element.prepend($('<span/>').text(event.userCount).css({
+				position: 'absolute',
+				right: 0,
+				top: 0,
+				fontSize: '10px',
+				lineHeight: '12px',
+				color: 'white'
+			}));
 			return element;
 		},
 
