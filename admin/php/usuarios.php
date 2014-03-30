@@ -10,7 +10,8 @@
 		$email = addslashes(htmlspecialchars($_POST["email"]));
 		$telefono = addslashes(htmlspecialchars($_POST["telefono"]));
 		$dni = addslashes(htmlspecialchars($_POST["dni"]));
-		insert_user($nombre,$apellidos,$pass,$email,$telefono,$dni);
+		$bonos = addslashes(htmlspecialchars($_POST["bonos"]));
+		insert_user($nombre,$apellidos,$pass,$email,$telefono,$dni,$bonos);
 	}
 	else if($tipo==="select_users"){
 		$query = addslashes(htmlspecialchars($_POST["query"]));
@@ -19,6 +20,11 @@
 	else if($tipo==="delete_user"){
 		$id = addslashes(htmlspecialchars($_POST["id"]));
 		delete_user($id);
+	}
+	else if($tipo==="edit_user"){
+		$id = addslashes(htmlspecialchars($_POST["id"]));
+		$bonos = addslashes(htmlspecialchars($_POST["bonos"]));
+		edit_user($id, $bonos);
 	}
 	else if($tipo==="get_users"){
 		$id_evento = addslashes(htmlspecialchars($_POST["id_evento"]));
@@ -32,14 +38,14 @@
 	***********************
 	**********************/
 
-	function insert_user($nombre,$apellidos,$pass,$email,$telefono,$dni){
+	function insert_user($nombre,$apellidos,$pass,$email,$telefono,$dni,$bonos){
 		$sql=mysql_query("SELECT id FROM usuarios WHERE dni='$dni'");
 
 		if(!$row = mysql_fetch_array($sql)){//si no existe el dni
 			$pass = $GLOBALS['config']['db']['salt'] . $pass;
 			//echo "^".$GLOBALS['config']['db']['salt'] . "<".$pass.">";
-			$sql = mysql_query("INSERT INTO usuarios (nombre,apellidos,pass,email,telefono,dni) 
-						VALUES ('$nombre','$apellidos',UNHEX(SHA1('$pass')),'$email','$telefono','$dni')");
+			$sql = mysql_query("INSERT INTO usuarios (nombre, apellidos, pass, email, telefono, dni, bonos) 
+						VALUES ('$nombre', '$apellidos', UNHEX(SHA1('$pass')), '$email', '$telefono', '$dni', '$bonos')");
 			if(!$sql){
 				echo "1";
 			}
@@ -55,7 +61,9 @@
 					$array[0][4]=$file['email'];
 					$array[0][5]=$file['telefono'];
 					$array[0][6]=$file['dni'];
-					$array[0][7]="<p style='color:blue'>Usuario insertado</p>";
+					$array[0][7]=$file['bonos'];
+					$array[0][8]="<p style='color:blue'>Usuario insertado</p>";
+					
 					echo json_encode($array);
 				}
 				else{
@@ -81,6 +89,7 @@
 			$array[$i][4]=$file['email'];
 			$array[$i][5]=$file['telefono'];
 			$array[$i][6]=$file['dni'];
+			$array[$i][7]=$file['bonos'];
 			$i++;
 		}
 		$result = json_encode($array);
@@ -116,6 +125,20 @@
 	function delete_user($id){
 		$sql = mysql_query("DELETE FROM usuarios WHERE id=".$id);
 
+		if(!$sql){
+			echo "0";
+		}
+		else{
+			echo select_users("");
+		}
+	}
+
+	function edit_user($id, $bonos){
+		//$sql=mysql_query("SELECT * FROM usuarios WHERE id IN(SELECT MAX(id) AS id FROM usuarios)");
+
+		
+		
+		$sql = mysql_query("UPDATE usuarios SET bonos = '$bonos' WHERE id = '$id' ");
 		if(!$sql){
 			echo "0";
 		}

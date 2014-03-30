@@ -8,6 +8,11 @@ $(function(){
 	
 	var tr = $('<tr>');
 	
+	var td = $('<td align="center">').addClass('titulo editar');
+	var imgEditar = $('<img src="img/editar.png" widht="30" height="30">');
+	td.append(imgEditar);
+	tr.append(td);
+
 	var td = $('<td align="center">').addClass('titulo nombre').text("Nombre");
 	ordenar(td,"nombre");
 	tr.append(td);
@@ -28,6 +33,10 @@ $(function(){
 	ordenar(td,"dni");
 	tr.append(td);
 
+	var td = $('<td align="center">').addClass('titulo bonos').text("Bonos");
+	ordenar(td,"bonos");
+	tr.append(td);
+
 	var td = $('<td align="center">').addClass('titulo eliminar');
 	var imgEliminar = $('<img src="img/eliminar.png" widht="30" height="30">');
 	td.append(imgEliminar);
@@ -35,14 +44,31 @@ $(function(){
 
 	$('#tabla_users').append(tr);//inserta la fila creada a la tabla
 			
-	//usersBD es un array bidimensional el cual devuelve las siguientes posiciones
-	//usersBD[i][0] = id,
-	//usersBD[i][1] = nombre,
-	//usersBD[i][2] = apellidos,
-	//usersBD[i][3] = pass,
-	//usersBD[i][4] = email,
-	//usersBD[i][5] = telefono,
-	//usersBD[i][6] = dni
+	/****************************************
+
+		La llamada a insertUsers() devuelve
+		usersBD[0][0] = id,
+		usersBD[0][1] = nombre,
+		usersBD[0][2] = apellidos,
+		usersBD[0][4] = email,
+		usersBD[0][5] = telefono,
+		usersBD[0][6] = dni,
+		usersBD[0][7] = mensaje,
+		usersBD[0][8] = bonos
+
+		------------------------------------
+		
+		La llamada a selectUsers() devuelve
+		usersBD[i][0] = id,
+		usersBD[i][1] = nombre,
+		usersBD[i][2] = apellidos,
+		usersBD[i][4] = email,
+		usersBD[i][5] = telefono,
+		usersBD[i][6] = dni,
+		usersBD[i][8] = bonos
+
+	*****************************************/
+
 	var dato = "tipo=select_users&query=";
 	$.ajax({
 		type: "POST",
@@ -70,6 +96,7 @@ $(function(){
 		var pwd2 = $("input#pwd2").val();
 		var email = $("input#email").val();
 		var telefono = $("input#telefono").val();
+		var bonos = $("input#bonos").val();
 
 		//Validamos el campo nombre, simplemente miramos que no esté vacío
 		if (nombre === "") {
@@ -98,8 +125,6 @@ $(function(){
 			return false;
 		}
 		else{
-			okInput('input#dni');
-			resetPlaceholder('input#dni', 'DNI');
 			if(dni.length!==9){
 				errorInput('input#dni');
 				showPlaceholder('input#dni', 'DNI incorrecto');
@@ -142,7 +167,36 @@ $(function(){
 			resetPlaceholder('input#pwd1', 'Password');
 			resetPlaceholder('input#pwd2', 'Repite password');
 		}
-		var dato = "tipo=insert_user&nombre="+nombre+"&apellidos="+apellidos+"&pass="+pwd1+"&email="+email+"&telefono="+telefono+"&dni="+dni;
+		if (!/^([0-9])*$/.test(telefono)){
+			errorInput('input#telefono');
+			showPlaceholder('input#telefono', 'El teléfono no es un número...');
+			$('input#telefono').val('');
+			return false;
+		}
+		else{
+			okInput('input#telefono');
+			resetPlaceholder('input#telefono', 'Teléfono');
+		}
+
+		if(bonos === ""){
+			errorInput('input#bonos');
+			showPlaceholder('input#bonos', 'Introduce los bonos');
+			return false;
+		}
+		else{
+			if (!/^([0-9])*$/.test(bonos)){
+				errorInput('input#bonos');
+				showPlaceholder('input#bonos', 'No has introducido un número...');
+				$('input#bonos').val('');
+				return false;
+			}
+			else{
+				okInput('input#bonos');
+				resetPlaceholder('input#bonos', 'Bonos');
+			}
+		}
+
+		var dato = "tipo=insert_user&nombre="+nombre+"&apellidos="+apellidos+"&pass="+pwd1+"&email="+email+"&telefono="+telefono+"&dni="+dni+"&bonos="+bonos;
 	    $.ajax({
 	           	type: "POST",
 	           	url: dirUsuarios,
@@ -166,7 +220,7 @@ $(function(){
 	           		}
 	           		else if(usersBD !== 0 && usersBD !== 1){
 		               	$("#respuesta_usuario")
-			               	.html(usersBD[0][7])
+			               	.html(usersBD[0][8])
 			               	.css({
 			               		'color': 'blue'
 		               	}); 
@@ -180,6 +234,39 @@ $(function(){
 	
 	$('#btn_crea_pass').mousedown(function() {
 		$('#pass').html(passwordAleatorio(8));
+	});
+
+	$("#btn_add_bonos").click(function(){
+		var addbonos = $("input#addbonos").val();
+		alert(addbonos);
+		if (!/^([0-9])*$/.test(addbonos)){
+			errorInput('input#addbonos');
+			showPlaceholder('input#addbonos', 'No has introducido un número...');
+			$('input#addbonos').val('');
+			return false;
+		}
+		else{
+			okInput('input#addbonos');
+			resetPlaceholder('input#addbonos', 'Bonos');
+		}
+
+		var dato = "tipo=edit_user&id="+$('.user').attr('id')+"&bonos="+addbonos;
+
+		alert(dato);
+		$.ajax({
+			type: "POST",
+			url: dirUsuarios,
+			data: dato,
+			success: function(data){
+						if(data !== '0'){
+							$(".datos").remove();
+							var usersBD = jQuery.parseJSON(data);
+							actualizaUsers(usersBD);
+						}
+					}
+		});
+		clearInputs("#form_edit");
+	    return false; // Evitar ejecutar el submit del formulario.
 	});
 
 	function ordenar(td, clase){
@@ -235,8 +322,33 @@ $(function(){
 
 	function actualizaUsers(usersBD){
 		for(var i in usersBD){
+			
 			var tr = $('<tr>');
-				var tdNombre = $('<td align="center">')
+
+			var tdEditar = $('<td align="center">')
+						.addClass('datos editar');
+			var img_editar = 
+					$('<img>')
+						.attr({
+							'id': usersBD[i][0],
+							'nombre': usersBD[i][1],
+							'apellidos': usersBD[i][2],
+							'src': 'img/editar.png',
+							'width': '30px',
+							'height': '30px'
+						})
+						.mousedown(function() {
+							$("#myModal_edit").modal('show');
+							$('.user').html($(this).attr('nombre')+" "+$(this).attr('apellidos'));
+							$('.user').attr({
+								'id': $(this).attr('id')
+							});
+						});
+			tdEditar.append(img_editar);
+			tr.append(tdEditar);
+
+			
+			var tdNombre = $('<td align="center">')
 						.addClass('datos nombre')
 						.text(usersBD[i][1]);
 			tr.append(tdNombre);
@@ -261,6 +373,11 @@ $(function(){
 						.text(usersBD[i][6]);
 			tr.append(tdDni);
 
+			var tdBonos = $('<td align="center">')
+						.addClass('datos bonos')
+						.text(usersBD[i][7]);
+			tr.append(tdBonos);
+			
 			var tdEliminar = $('<td align="center">')
 						.addClass('datos eliminar');
 			var img_eliminar = 

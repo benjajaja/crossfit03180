@@ -126,10 +126,20 @@ td.datos{
 	font-weight:bold;
 	background-color: rgb(235, 235, 235);
 }
-td.eliminar{
+td.eliminar, td.editar{
 	width: 60px;
-	min-width:60px;
-	max-width:60px;
+	min-width: 60px;
+	max-width: 60px;
+}
+td.bonos{
+	width: 100px;
+	min-width: 100px;
+	max-width: 100px;
+}
+td.dni, td.telefono{
+	width: 130px;
+	min-width: 130px;
+	max-width: 130px;
 }
 #respuesta_usuario,#respuesta_evento{
 	color:red;
