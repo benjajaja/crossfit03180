@@ -238,7 +238,6 @@ $(function(){
 
 	$("#btn_add_bonos").click(function(){
 		var addbonos = $("input#addbonos").val();
-		alert(addbonos);
 		if (!/^([0-9])*$/.test(addbonos)){
 			errorInput('input#addbonos');
 			showPlaceholder('input#addbonos', 'No has introducido un número...');
@@ -251,8 +250,6 @@ $(function(){
 		}
 
 		var dato = "tipo=edit_user&id="+$('.user').attr('id')+"&bonos="+addbonos;
-
-		alert(dato);
 		$.ajax({
 			type: "POST",
 			url: dirUsuarios,
