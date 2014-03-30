@@ -64,6 +64,14 @@ class Events {
 		$fecha = $req->params['year'].'-'.$req->params['month'].'-'.$req->params['day'];
 		$hora = (int) $req->params['hour'];
 
+		$timestamp = strtotime($fecha . " " . sprintf("%02d", $hora) . ":00");
+
+		
+		if ($timestamp - time() < 0) {
+			$res->add('No puedes desinscribirte de un evento que ya ha transcurrido. Si se trata de un error o un problema con los bonos, por favor, ponte en contacto con el equipo del box.');
+			return $res->send(403, 'text');
+		}
+
 		$db = $GLOBALS['db'];
 
 		$event = $db->GetArray('SELECT eventos.id, eventos.max_usuarios FROM evento_calendario LEFT JOIN eventos ON eventos.id = evento_calendario.id_evento WHERE evento_calendario.fecha = ? AND evento_calendario.hora = ?', [$fecha, $hora])[0];
@@ -76,7 +84,14 @@ class Events {
 		}
 
 		if ($db->Execute('DELETE FROM usuario_evento WHERE id_usuario = ? AND id_evento = ?', [$_SESSION['user']['id'], $event['id']])) {
-			return $res->send(204, 'text');
+			if ($db->Execute('UPDATE usuarios SET bonos = bonos + 1 WHERE id = ?', [$_SESSION['user']['id']])) {
+				$_SESSION['user']['bonos'] = ((int)$_SESSION['user']['bonos']) + 1;
+				return $res->send(204, 'text');
+			} else {
+				$res->add('Error interno: no se ha recuperado el bono');
+				return $res->send(500, 'text');
+			}
+			
 		} else {
 			$res->add('Error interno');
 			return $res->send(500, 'text');
