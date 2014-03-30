@@ -30,8 +30,25 @@ class Events {
 			return $res->send(400, 'text');
 		}
 
+		if (((int)$_SESSION['user']['bonos']) <= 0) {
+			$res->add('No tienes bonos suficientes');
+			return $res->send(403, 'text');
+		}
+
+
 		if ($db->Execute('INSERT INTO usuario_evento SET id_usuario = ?, id_evento = ?', [$_SESSION['user']['id'], $event['id']])) {
-			return $res->send(204, 'text');
+			if ($db->Execute('UPDATE usuarios SET bonos = bonos - 1 WHERE id = ?', [$_SESSION['user']['id']])) {
+				$_SESSION['user']['bonos'] = ((int)$_SESSION['user']['bonos']) - 1;
+				return $res->send(204, 'text');
+
+			} else {
+				$res->add('Error interno');
+				$res->send(500, 'text');
+
+				$db->Execute('DELETE FROM usuario_evento WHERE id_usuario = ?, id_evento = ?', [$_SESSION['user']['id'], $event['id']]);
+
+				return;
+			}
 		} else {
 			$res->add('Error interno');
 			return $res->send(500, 'text');

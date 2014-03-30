@@ -8,7 +8,7 @@ class Auth {
 	public function post($req, $res) {
 
 		$users = $GLOBALS['db']->GetAll(
-			'SELECT id, nombre FROM usuarios WHERE UPPER(email) = UPPER(?) AND pass = UNHEX(SHA1(?)) LIMIT 1',
+			'SELECT id, nombre, bonos FROM usuarios WHERE UPPER(email) = UPPER(?) AND pass = UNHEX(SHA1(?)) LIMIT 1',
 			[
 				$req->data['user'],
 				$GLOBALS['db']->_salt . $req->data['password']
